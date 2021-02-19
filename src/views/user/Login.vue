@@ -27,7 +27,7 @@
             </a-input>
           </a-form-item>
 
-          <a-row :gutter="0">
+          <a-row :gutter="0" hidden>
             <a-col :span="16">
               <a-form-item>
                 <a-input
@@ -48,7 +48,7 @@
 
 
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登录">
+<!--        <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
             <a-input
               v-decorator="['mobile',validatorRules.mobile]"
@@ -80,10 +80,10 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>
+        </a-tab-pane>-->
       </a-tabs>
 
-      <a-form-item>
+      <a-form-item hidden>
         <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登录</a-checkbox>
         <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
@@ -158,7 +158,7 @@
           password:{rules: [{ required: true, message: '请输入密码!',validator: 'click'}]},
           mobile:{rules: [{validator:this.validateMobile}]},
           captcha:{rule: [{ required: true, message: '请输入验证码!'}]},
-          inputCode:{rules: [{ required: true, message: '请输入验证码!'}]}
+          // inputCode:{rules: [{ required: true, message: '请输入验证码!'}]}
         },
         verifiedCode:"",
         inputCodeContent:"",

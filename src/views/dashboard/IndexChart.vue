@@ -1,6 +1,6 @@
 <template>
   <div class="page-header-index-wide">
-    <a-row :gutter="24">
+    <a-row :gutter="24" hidden>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
         <chart-card :loading="loading" title="总销售额" total="￥126,560">
           <a-tooltip title="指标说明" slot="action">
@@ -63,7 +63,7 @@
       </a-col>
     </a-row>
 
-    <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
+    <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}" hidden>
       <div class="salesCard">
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
           <div class="extra-wrapper" slot="tabBarExtraContent">

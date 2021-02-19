@@ -2,11 +2,11 @@
   <div class="user-wrapper" :class="theme">
     <!-- update_begin author:zhaoxin date:20191129 for: 做头部菜单栏导航 -->
     <!-- update-begin author:sunjianlei date:20191@20 for: 解决全局样式冲突的问题 -->
-    <span class="action" @click="showClick">
+<!--    <span class="action" @click="showClick">
       <a-icon type="search"></a-icon>
-    </span>
+    </span>-->
     <!-- update-begin author:sunjianlei date:20200219 for: 菜单搜索改为动态组件，在手机端呈现出弹出框 -->
-    <component :is="searchMenuComp" v-show="searchMenuVisible || isMobile()" class="borders" :visible="searchMenuVisible" title="搜索菜单" :footer="null" @cancel="searchMenuVisible=false">
+<!--    <component :is="searchMenuComp" v-show="searchMenuVisible || isMobile()" class="borders" :visible="searchMenuVisible" title="搜索菜单" :footer="null" @cancel="searchMenuVisible=false">
       <a-select
         class="search-input"
         showSearch
@@ -22,22 +22,22 @@
       >
         <a-select-option v-for="(site,index) in searchMenuOptions" :key="index" :value="site.id">{{site.meta.title}}</a-select-option>
       </a-select>
-    </component>
+    </component>-->
     <!-- update-end author:sunjianlei date:20200219 for: 菜单搜索改为动态组件，在手机端呈现出弹出框 -->
     <!-- update-end author:sunjianlei date:20191220 for: 解决全局样式冲突的问题 -->
     <!-- update_end  author:zhaoxin date:20191129 for: 做头部菜单栏导航 -->
-    <span class="action">
+<!--    <span class="action">
       <a class="logout_title" target="_blank" href="http://doc.jeecg.com">
         <a-icon type="question-circle-o"></a-icon>
       </a>
     </span>
-    <header-notice class="action"/>
+    <header-notice class="action"/>-->
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
-        <a-avatar class="avatar" size="small" :src="getAvatar()"/>
+<!--        <a-avatar class="avatar" size="small" :src="getAvatar()"/>-->
         <span v-if="isDesktop()">欢迎您，{{ nickname() }}</span>
       </span>
-      <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
+<!--      <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="0">
           <router-link :to="{ name: 'account-center' }">
             <a-icon type="user"/>
@@ -66,7 +66,7 @@
           <a-icon type="sync"/>
           <span>清理缓存</span>
         </a-menu-item>
-       <!-- <a-menu-item key="2" disabled>
+       &lt;!&ndash; <a-menu-item key="2" disabled>
           <a-icon type="setting"/>
           <span>测试</span>
         </a-menu-item>
@@ -76,8 +76,8 @@
             <a-icon type="logout"/>
             <span>退出登录</span>
           </a>
-        </a-menu-item>-->
-      </a-menu>
+        </a-menu-item>&ndash;&gt;
+      </a-menu>-->
     </a-dropdown>
     <span class="action">
       <a class="logout_title" href="javascript:;" @click="handleLogout">
@@ -86,8 +86,8 @@
       </a>
     </span>
     <user-password ref="userPassword"></user-password>
-    <depart-select ref="departSelect" :closable="true" title="部门切换"></depart-select>
-    <setting-drawer ref="settingDrawer" :closable="true" title="系统设置"></setting-drawer>
+<!--    <depart-select ref="departSelect" :closable="true" title="部门切换"></depart-select>
+    <setting-drawer ref="settingDrawer" :closable="true" title="系统设置"></setting-drawer>-->
   </div>
 </template>
 
