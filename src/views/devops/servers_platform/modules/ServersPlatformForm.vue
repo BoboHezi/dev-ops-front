@@ -5,12 +5,12 @@
         <a-row>
           <a-col :span="24">
             <a-form-item label="服务器IP" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['serversIp']" :trigger-change="true" dictCode="servers_form,servers_ip,id" placeholder="请选择服务器IP" />
+              <j-dict-select-tag type="list" v-decorator="['serversIp']" :trigger-change="true" dictCode="servers_form,servers_ip,servers_ip" placeholder="请选择服务器IP" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="平台名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['serversPlatformName']" :trigger-change="true" dictCode="platform_form,platform_name,id" placeholder="请选择平台名称" />
+              <j-dict-select-tag type="list" v-decorator="['serversPlatformName']" :trigger-change="true" dictCode="platform_form,platform_name,platform_name" placeholder="请选择平台名称" />
             </a-form-item>
           </a-col>
           <a-col :span="24">

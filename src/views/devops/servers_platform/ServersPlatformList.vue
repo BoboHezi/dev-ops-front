@@ -6,12 +6,12 @@
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="服务器IP">
-              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serversIp" dictCode="servers_form,servers_ip,id"/>
+              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serversIp" dictCode="servers_form,servers_ip,servers_ip"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="平台名称">
-              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.serversPlatformName" dictCode="platform_form,platform_name,id"/>
+              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.serversPlatformName" dictCode="platform_form,platform_name,platform_name"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -148,12 +148,12 @@
           {
             title:'服务器IP',
             align:"center",
-            dataIndex: 'serversIp_dictText'
+            dataIndex: 'serversIp'
           },
           {
             title:'平台名称',
             align:"center",
-            dataIndex: 'serversPlatformName_dictText'
+            dataIndex: 'serversPlatformName'
           },
           {
             title:'平台路径',
@@ -194,8 +194,8 @@
       },
       getSuperFieldList(){
         let fieldList=[];
-        fieldList.push({type:'string',value:'serversIp',text:'服务器IP',dictCode:'servers_form,servers_ip,id'})
-        fieldList.push({type:'string',value:'serversPlatformName',text:'平台名称',dictCode:'platform_form,platform_name,id'})
+        fieldList.push({type:'string',value:'serversIp',text:'服务器IP',dictCode:''})
+        fieldList.push({type:'string',value:'serversPlatformName',text:'平台名称',dictCode:''})
         fieldList.push({type:'string',value:'serversPlatformDir',text:'平台路径',dictCode:''})
         this.superFieldList = fieldList
       }

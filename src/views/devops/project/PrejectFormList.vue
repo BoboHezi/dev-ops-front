@@ -11,7 +11,7 @@
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="平台名称">
-              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.projectPlatform" dictCode="platform_form,platform_name,id"/>
+              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.projectPlatform" dictCode="platform_form,platform_name,platform_name"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -141,7 +141,7 @@
           {
             title:'项目平台',
             align:"center",
-            dataIndex: 'projectPlatform_dictText'
+            dataIndex: 'projectPlatform'
           },
           {
             title:'项目名称',
@@ -156,7 +156,7 @@
           {
             title:'版本类型',
             align:"center",
-            dataIndex: 'projectVariant_dictText'
+            dataIndex: 'projectVariant'
           },
           {
             title:'编译签名',
@@ -167,7 +167,7 @@
           {
             title:'编译动作',
             align:"center",
-            dataIndex: 'projectBuildAction_dictText'
+            dataIndex: 'projectBuildAction'
           },
           {
             title:'任务状态',
@@ -209,12 +209,12 @@
       },
       getSuperFieldList(){
         let fieldList=[];
-        fieldList.push({type:'string',value:'projectPlatform',text:'项目平台',dictCode:'platform_form,platform_name,platform_name'})
+        fieldList.push({type:'string',value:'projectPlatform',text:'项目平台',dictCode:''})
         fieldList.push({type:'string',value:'projectName',text:'项目名称',dictCode:''})
         fieldList.push({type:'string',value:'serverIpaddress',text:'服务器 IP 地址 ',dictCode:''})
-        fieldList.push({type:'string',value:'projectVariant',text:'版本类型',dictCode:'devops_build,build_variant,build_variant'})
+        fieldList.push({type:'string',value:'projectVariant',text:'版本类型',dictCode:''})
         fieldList.push({type:'switch',value:'projectBuildSign',text:'编译签名'})
-        fieldList.push({type:'string',value:'projectBuildAction',text:'编译动作',dictCode:'devops_build,build_action,build_action'})
+        fieldList.push({type:'string',value:'projectBuildAction',text:'编译动作',dictCode:''})
         fieldList.push({type:'string',value:'projectStatus',text:'任务状态',dictCode:''})
         this.superFieldList = fieldList
       }
