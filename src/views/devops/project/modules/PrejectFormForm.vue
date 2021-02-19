@@ -20,7 +20,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="版本类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['projectVariant', validatorRules.projectVariant]" :trigger-change="true" dictCode="devops_build,build_variant,build_variant" placeholder="请选择版本类型" />
+              <j-dict-select-tag type="list" v-decorator="['projectVariant', validatorRules.projectVariant]" :trigger-change="true" dictCode="devops_build,build_variant,build_variant_code" placeholder="请选择版本类型" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -30,7 +30,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="编译动作" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['projectBuildAction', validatorRules.projectBuildAction]" :trigger-change="true" dictCode="devops_build,build_action,build_action" placeholder="请选择编译动作" />
+              <j-dict-select-tag type="list" v-decorator="['projectBuildAction', validatorRules.projectBuildAction]" :trigger-change="true" dictCode="devops_build,build_action,build_action_code" placeholder="请选择编译动作" />
             </a-form-item>
           </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
