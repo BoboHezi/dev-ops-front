@@ -32,9 +32,6 @@
         </a-row>
       </a-form>
     </div>
-    <!-- 查询区域-END -->
-
-    <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button hidden type="primary" icon="download" @click="handleExportXls('项目表单')">导出</a-button>
@@ -50,7 +47,6 @@
         <a-button hidden style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
     </div>
-
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" hidden>
@@ -68,7 +64,6 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -94,10 +89,8 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="startBuild(record)">开始编译</a>
-
           <a-divider type="vertical" />
           <a @click="handleEdit(record)">编辑</a>
-
           <a-divider type="vertical" />
           <a @click="handleDetail(record)">详情</a>
         </span>
@@ -189,7 +182,7 @@
           deleteBatch: "/devops/prejectForm/deleteBatch",
           exportXlsUrl: "/devops/prejectForm/exportXls",
           importExcelUrl: "devops/prejectForm/importExcel",
-          
+          autoBuild: "/devops/build/autoBuild",
         },
         dictOptions:{},
         superFieldList:[],
@@ -217,6 +210,33 @@
         fieldList.push({type:'string',value:'projectBuildAction',text:'编译动作',dictCode:''})
         fieldList.push({type:'string',value:'projectStatus',text:'任务状态',dictCode:''})
         this.superFieldList = fieldList
+      },
+      handleCompile(mrecord) {
+        alert(mrecord.projectBuildAction)
+        var vm = this
+        vm.$http.post(
+          this.url.autoBuild, {
+            id: mrecord.id,
+            projectPlatform: mrecord.projectPlatform,
+            projectName: mrecord.projectName,
+            serverIpaddress: mrecord.serverIpaddress,
+            projectVariant: mrecord.projectVariant,
+            projectBuildSign: mrecord.projectBuildSign,
+            projectBuildAction: mrecord.projectBuildAction,
+            projectStatus: mrecord.projectStatus
+          })
+          .then(function(res) {
+            if (res.success) {
+              vm.$message.success(res.message)
+              vm.$emit('ok')
+            } else {
+              vm.$message.warning(res.message)
+            }
+          })
+          .catch(function(response) {
+              console.log(response)
+            }
+          )
       }
     }
   }
