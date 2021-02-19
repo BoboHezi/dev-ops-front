@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="服务器IP">
-              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serversIp" dictCode="servers_form,servers_ip,id"/>
+              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serversIp" dictCode="servers_form,servers_ip,servers_ip"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">

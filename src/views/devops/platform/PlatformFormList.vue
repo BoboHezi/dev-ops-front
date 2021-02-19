@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="平台名称">
-              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.platformName" dictCode="platform_form,platform_name,id"/>
+              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.platformName" dictCode="platform_form,platform_name,platform_name"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">

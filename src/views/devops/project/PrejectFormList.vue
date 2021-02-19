@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="服务器IP">
-              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serverIpaddress" dictCode="servers_form,servers_ip,id"/>
+              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serverIpaddress" dictCode="servers_form,servers_ip,servers_ip"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -209,12 +209,12 @@
       },
       getSuperFieldList(){
         let fieldList=[];
-        fieldList.push({type:'string',value:'projectPlatform',text:'项目平台',dictCode:'platform_form,platform_name,id'})
+        fieldList.push({type:'string',value:'projectPlatform',text:'项目平台',dictCode:'platform_form,platform_name,platform_name'})
         fieldList.push({type:'string',value:'projectName',text:'项目名称',dictCode:''})
         fieldList.push({type:'string',value:'serverIpaddress',text:'服务器 IP 地址 ',dictCode:''})
-        fieldList.push({type:'string',value:'projectVariant',text:'版本类型',dictCode:'devops_build,build_variant,id'})
+        fieldList.push({type:'string',value:'projectVariant',text:'版本类型',dictCode:'devops_build,build_variant,build_variant'})
         fieldList.push({type:'switch',value:'projectBuildSign',text:'编译签名'})
-        fieldList.push({type:'string',value:'projectBuildAction',text:'编译动作',dictCode:'devops_build,build_action,id'})
+        fieldList.push({type:'string',value:'projectBuildAction',text:'编译动作',dictCode:'devops_build,build_action,build_action'})
         fieldList.push({type:'string',value:'projectStatus',text:'任务状态',dictCode:''})
         this.superFieldList = fieldList
       }
