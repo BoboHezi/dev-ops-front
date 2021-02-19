@@ -10,7 +10,7 @@
     <!-- 查询区域-END -->
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" hidden>
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('编译类型')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
@@ -28,7 +28,7 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" hidden>
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -67,7 +67,7 @@
           </a-button>
         </template>
 
-        <span slot="action" slot-scope="text, record">
+        <span slot="action" slot-scope="text, record" hidden>
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
@@ -112,16 +112,6 @@
         // 表头
         columns: [
           {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },
-          {
             title:'编译版本',
             align:"center",
             dataIndex: 'buildVariant'
@@ -130,14 +120,6 @@
             title:'编译动作',
             align:"center",
             dataIndex: 'buildAction'
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            fixed:"right",
-            width:147,
-            scopedSlots: { customRender: 'action' }
           }
         ],
         url: {

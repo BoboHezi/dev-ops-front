@@ -243,6 +243,9 @@ export const JeecgListMixin = {
       this.$refs.modalForm.title="详情";
       this.$refs.modalForm.disableSubmit = true;
     },
+    startBuild:function(record){
+    // TODO 开始编译，停止编译
+    },
     /* 导出 */
     handleExportXls2(){
       let paramsStr = encodeURI(JSON.stringify(this.getQueryParams()));
