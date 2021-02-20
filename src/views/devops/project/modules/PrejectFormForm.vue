@@ -33,6 +33,21 @@
               <j-dict-select-tag type="list" v-decorator="['projectBuildAction', validatorRules.projectBuildAction]" :trigger-change="true" dictCode="devops_build,build_action,build_action_code" placeholder="请选择编译动作" />
             </a-form-item>
           </a-col>
+          <a-col :span="24">
+            <a-form-item label="项目路径" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectDir', validatorRules.projectDir]" placeholder="请输入项目路径"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="服务器主机名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverHost', validatorRules.serverHost]" placeholder="请输入服务器主机名"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="服务器密码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverPassword', validatorRules.serverPassword]" placeholder="请输入服务器密码"  ></a-input>
+            </a-form-item>
+          </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
             <a-button @click="submitForm">提 交</a-button>
           </a-col>
@@ -151,7 +166,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'projectPlatform','projectName','serverIpaddress','projectVariant','projectBuildSign','projectBuildAction','projectStatus'))
+          this.form.setFieldsValue(pick(this.model,'projectPlatform','projectName','serverIpaddress','projectVariant','projectBuildSign','projectBuildAction','projectStatus','projectDir','serverHost','serverPassword'))
         })
       },
       //渲染流程表单数据
@@ -196,7 +211,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'projectPlatform','projectName','serverIpaddress','projectVariant','projectBuildSign','projectBuildAction','projectStatus'))
+        this.form.setFieldsValue(pick(row,'projectPlatform','projectName','serverIpaddress','projectVariant','projectBuildSign','projectBuildAction','projectStatus','projectDir','serverHost','serverPassword'))
       },
     }
   }

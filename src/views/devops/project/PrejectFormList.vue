@@ -88,7 +88,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="startBuild(record)">开始编译</a>
+          <a @click="handleCompile(record)">开始编译</a>
           <a-divider type="vertical" />
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical" />
@@ -209,6 +209,9 @@
         fieldList.push({type:'switch',value:'projectBuildSign',text:'编译签名'})
         fieldList.push({type:'string',value:'projectBuildAction',text:'编译动作',dictCode:''})
         fieldList.push({type:'string',value:'projectStatus',text:'任务状态',dictCode:''})
+        fieldList.push({type:'string',value:'projectDir',text:'项目路径',dictCode:''})
+        fieldList.push({type:'string',value:'serverHost',text:'服务器主机名',dictCode:''})
+        fieldList.push({type:'string',value:'serverPassword',text:'服务器密码',dictCode:''})
         this.superFieldList = fieldList
       },
       handleCompile(mrecord) {
@@ -223,7 +226,10 @@
             projectVariant: mrecord.projectVariant,
             projectBuildSign: mrecord.projectBuildSign,
             projectBuildAction: mrecord.projectBuildAction,
-            projectStatus: mrecord.projectStatus
+            projectStatus: mrecord.projectStatus,
+            projectDir: mrecord.projectDir,
+            serverHost: mrecord.serverHost,
+            serverPassword: mrecord.serverPassword
           })
           .then(function(res) {
             if (res.success) {
