@@ -73,9 +73,9 @@
         validatorRules: {
         },
         url: {
-          add: "/devops/serversPlatform/add",
-          edit: "/devops/serversPlatform/edit",
-          queryById: "/devops/serversPlatform/queryById"
+          add: "/devopsold/serversPlatform/add",
+          edit: "/devopsold/serversPlatform/edit",
+          queryById: "/devopsold/serversPlatform/queryById"
         }
       }
     },

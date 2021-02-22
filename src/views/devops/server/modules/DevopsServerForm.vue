@@ -4,13 +4,28 @@
       <a-form :form="form" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-item label="编译版本" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['buildVariant']" placeholder="请输入编译版本"  ></a-input>
+            <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverName']" placeholder="请输入名称"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="编译动作" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['buildAction']" placeholder="请输入编译动作"  ></a-input>
+            <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverDesc']" placeholder="请输入描述"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="IP地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverIp', validatorRules.serverIp]" placeholder="请输入IP地址"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="主机名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverHost', validatorRules.serverHost]" placeholder="请输入主机名"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="密码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['serverPassword', validatorRules.serverPassword]" placeholder="请输入密码"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
@@ -29,7 +44,7 @@
   import { validateDuplicateValue } from '@/utils/util'
 
   export default {
-    name: 'DevopsBuildForm',
+    name: 'DevopsServerForm',
     components: {
     },
     props: {
@@ -66,11 +81,26 @@
         },
         confirmLoading: false,
         validatorRules: {
+          serverIp: {
+            rules: [
+              { required: true, message: '请输入IP地址!'},
+            ]
+          },
+          serverHost: {
+            rules: [
+              { required: true, message: '请输入主机名!'},
+            ]
+          },
+          serverPassword: {
+            rules: [
+              { required: true, message: '请输入密码!'},
+            ]
+          },
         },
         url: {
-          add: "/devops/devopsBuild/add",
-          edit: "/devops/devopsBuild/edit",
-          queryById: "/devops/devopsBuild/queryById"
+          add: "/server/devopsServer/add",
+          edit: "/server/devopsServer/edit",
+          queryById: "/server/devopsServer/queryById"
         }
       }
     },
@@ -106,7 +136,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'buildVariant','buildAction'))
+          this.form.setFieldsValue(pick(this.model,'serverName','serverDesc','serverIp','serverHost','serverPassword','serverStatus','serverCpuUsageRate','serverAvailableStorage'))
         })
       },
       //渲染流程表单数据
@@ -152,7 +182,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'buildVariant','buildAction'))
+        this.form.setFieldsValue(pick(row,'serverName','serverDesc','serverIp','serverHost','serverPassword','serverStatus','serverCpuUsageRate','serverAvailableStorage'))
       },
     }
   }

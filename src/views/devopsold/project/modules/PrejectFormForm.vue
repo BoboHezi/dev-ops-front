@@ -128,9 +128,9 @@
           },
         },
         url: {
-          add: "/devops/prejectForm/add",
-          edit: "/devops/prejectForm/edit",
-          queryById: "/devops/prejectForm/queryById"
+          add: "/devopsold/prejectForm/add",
+          edit: "/devopsold/prejectForm/edit",
+          queryById: "/devopsold/prejectForm/queryById"
         }
       }
     },

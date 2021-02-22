@@ -4,13 +4,38 @@
       <a-form :form="form" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-item label="平台名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['platformName']" placeholder="请输入平台名称"  ></a-input>
+            <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectName']" placeholder="请输入名称"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="平台路径" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['platformDir']" placeholder="请输入平台路径"  ></a-input>
+            <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectDesc']" placeholder="请输入描述"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectCodeId']" placeholder="请输入平台"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="项目版本号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectVersionNumber']" placeholder="请输入项目版本号"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="项目号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectNumber']" placeholder="请输入项目号"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="客户号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectCustomNumber']" placeholder="请输入客户号"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="渠道号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['projectChannelNumber']" placeholder="请输入渠道号"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
@@ -29,7 +54,7 @@
   import { validateDuplicateValue } from '@/utils/util'
 
   export default {
-    name: 'PlatformFormForm',
+    name: 'DevopsProjectForm',
     components: {
     },
     props: {
@@ -68,9 +93,9 @@
         validatorRules: {
         },
         url: {
-          add: "/devops/platformForm/add",
-          edit: "/devops/platformForm/edit",
-          queryById: "/devops/platformForm/queryById"
+          add: "/project/devopsProject/add",
+          edit: "/project/devopsProject/edit",
+          queryById: "/project/devopsProject/queryById"
         }
       }
     },
@@ -106,7 +131,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'platformName','platformDir'))
+          this.form.setFieldsValue(pick(this.model,'projectName','projectDesc','projectCodeId','projectVersionNumber','projectNumber','projectCustomNumber','projectChannelNumber'))
         })
       },
       //渲染流程表单数据
@@ -152,7 +177,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'platformName','platformDir'))
+        this.form.setFieldsValue(pick(row,'projectName','projectDesc','projectCodeId','projectVersionNumber','projectNumber','projectCustomNumber','projectChannelNumber'))
       },
     }
   }

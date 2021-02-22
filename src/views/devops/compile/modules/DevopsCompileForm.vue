@@ -1,0 +1,234 @@
+<template>
+  <a-spin :spinning="confirmLoading">
+    <j-form-container :disabled="formDisabled">
+      <a-form :form="form" slot="detail">
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileName', validatorRules.compileName]" placeholder="请输入名称"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileDesc']" placeholder="请输入描述"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="项目，平台，版本号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileProjectId', validatorRules.compileProjectId]" placeholder="请输入项目，平台，版本号"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="版本类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileVariant', validatorRules.compileVariant]" placeholder="请输入版本类型"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="编译动作" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileAction', validatorRules.compileAction]" placeholder="请输入编译动作"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="是否签名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number v-decorator="['compileIsSign', validatorRules.compileIsSign]" placeholder="请输入是否签名" style="width: 100%" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="是否验收" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number v-decorator="['compileIsVerify', validatorRules.compileIsVerify]" placeholder="请输入是否验收" style="width: 100%" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="任务状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number v-decorator="['compileStatus', validatorRules.compileStatus]" placeholder="请输入任务状态" style="width: 100%" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="邮箱通知抄送" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileSendEmail', validatorRules.compileSendEmail]" placeholder="请输入邮箱通知抄送"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
+            <a-button @click="submitForm">提 交</a-button>
+          </a-col>
+        </a-row>
+      </a-form>
+    </j-form-container>
+  </a-spin>
+</template>
+
+<script>
+
+  import { httpAction, getAction } from '@/api/manage'
+  import pick from 'lodash.pick'
+  import { validateDuplicateValue } from '@/utils/util'
+
+  export default {
+    name: 'DevopsCompileForm',
+    components: {
+    },
+    props: {
+      //流程表单data
+      formData: {
+        type: Object,
+        default: ()=>{},
+        required: false
+      },
+      //表单模式：true流程表单 false普通表单
+      formBpm: {
+        type: Boolean,
+        default: false,
+        required: false
+      },
+      //表单禁用
+      disabled: {
+        type: Boolean,
+        default: false,
+        required: false
+      }
+    },
+    data () {
+      return {
+        form: this.$form.createForm(this),
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+        confirmLoading: false,
+        validatorRules: {
+          compileName: {
+            rules: [
+              { required: true, message: '请输入名称!'},
+            ]
+          },
+          compileProjectId: {
+            rules: [
+              { required: true, message: '请输入项目，平台，版本号!'},
+            ]
+          },
+          compileVariant: {
+            rules: [
+              { required: true, message: '请输入版本类型!'},
+            ]
+          },
+          compileAction: {
+            rules: [
+              { required: true, message: '请输入编译动作!'},
+            ]
+          },
+          compileIsSign: {
+            rules: [
+              { required: true, message: '请输入是否签名!'},
+            ]
+          },
+          compileIsVerify: {
+            rules: [
+              { required: true, message: '请输入是否验收!'},
+            ]
+          },
+          compileStatus: {
+            rules: [
+              { required: true, message: '请输入任务状态!'},
+            ]
+          },
+          compileSendEmail: {
+            rules: [
+              { required: true, message: '请输入邮箱通知抄送!'},
+            ]
+          },
+        },
+        url: {
+          add: "/compile/devopsCompile/add",
+          edit: "/compile/devopsCompile/edit",
+          queryById: "/compile/devopsCompile/queryById"
+        }
+      }
+    },
+    computed: {
+      formDisabled(){
+        if(this.formBpm===true){
+          if(this.formData.disabled===false){
+            return false
+          }
+          return true
+        }
+        return this.disabled
+      },
+      showFlowSubmitButton(){
+        if(this.formBpm===true){
+          if(this.formData.disabled===false){
+            return true
+          }
+        }
+        return false
+      }
+    },
+    created () {
+      //如果是流程中表单，则需要加载流程表单data
+      this.showFlowData();
+    },
+    methods: {
+      add () {
+        this.edit({});
+      },
+      edit (record) {
+        this.form.resetFields();
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compileProjectId','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+        })
+      },
+      //渲染流程表单数据
+      showFlowData(){
+        if(this.formBpm === true){
+          let params = {id:this.formData.dataId};
+          getAction(this.url.queryById,params).then((res)=>{
+            if(res.success){
+              this.edit (res.result);
+            }
+          });
+        }
+      },
+      submitForm () {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.id){
+              httpurl+=this.url.add;
+              method = 'post';
+            }else{
+              httpurl+=this.url.edit;
+               method = 'put';
+            }
+            let formData = Object.assign(this.model, values);
+            console.log("表单提交数据",formData)
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+            })
+          }
+         
+        })
+      },
+      popupCallback(row){
+        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compileProjectId','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+      },
+    }
+  }
+</script>

@@ -4,21 +4,6 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="平台名称">
-              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.platformName" dictCode="platform_form,platform_name,platform_name"/>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -27,7 +12,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button hidden type="primary" icon="download" @click="handleExportXls('平台表格')">导出</a-button>
+      <a-button hidden type="primary" icon="download" @click="handleExportXls('服务器表单')">导出</a-button>
       <a-upload hidden name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button hidden type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -37,13 +22,13 @@
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
-        <a-button hidden style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" hidden>
+      <div hidden class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -85,10 +70,7 @@
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a>删除</a>
-          </a-popconfirm>
-          <a-dropdown hidden>
+          <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -106,7 +88,7 @@
       </a-table>
     </div>
 
-    <platform-form-modal ref="modalForm" @ok="modalFormOk"></platform-form-modal>
+    <devops-server-modal ref="modalForm" @ok="modalFormOk"></devops-server-modal>
   </a-card>
 </template>
 
@@ -115,21 +97,21 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PlatformFormModal from './modules/PlatformFormModal'
+  import DevopsServerModal from './modules/DevopsServerModal'
 
   export default {
-    name: 'PlatformFormList',
+    name: 'DevopsServerList',
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      PlatformFormModal
+      DevopsServerModal
     },
     data () {
       return {
-        description: '平台表格管理页面',
+        description: '服务器表单管理页面',
         // 表头
         columns: [
           {
-            title: '编号',
+            title: '序号',
             dataIndex: '',
             key:'rowIndex',
             width:60,
@@ -139,14 +121,44 @@
             }
           },
           {
-            title:'平台名称',
+            title:'名称',
             align:"center",
-            dataIndex: 'platformName'
+            dataIndex: 'serverName'
           },
           {
-            title:'平台路径',
+            title:'描述',
             align:"center",
-            dataIndex: 'platformDir'
+            dataIndex: 'serverDesc'
+          },
+          {
+            title:'IP地址',
+            align:"center",
+            dataIndex: 'serverIp'
+          },
+          {
+            title:'主机名',
+            align:"center",
+            dataIndex: 'serverHost'
+          },
+          {
+            title:'密码',
+            align:"center",
+            dataIndex: 'serverPassword'
+          },
+          {
+            title:'状态信息',
+            align:"center",
+            dataIndex: 'serverStatus'
+          },
+          {
+            title:'CPU使用率',
+            align:"center",
+            dataIndex: 'serverCpuUsageRate'
+          },
+          {
+            title:'存储剩余空间',
+            align:"center",
+            dataIndex: 'serverAvailableStorage'
           },
           {
             title: '操作',
@@ -158,11 +170,11 @@
           }
         ],
         url: {
-          list: "/devops/platformForm/list",
-          delete: "/devops/platformForm/delete",
-          deleteBatch: "/devops/platformForm/deleteBatch",
-          exportXlsUrl: "/devops/platformForm/exportXls",
-          importExcelUrl: "devops/platformForm/importExcel",
+          list: "/server/devopsServer/list",
+          delete: "/server/devopsServer/delete",
+          deleteBatch: "/server/devopsServer/deleteBatch",
+          exportXlsUrl: "/server/devopsServer/exportXls",
+          importExcelUrl: "server/devopsServer/importExcel",
           
         },
         dictOptions:{},
@@ -182,8 +194,14 @@
       },
       getSuperFieldList(){
         let fieldList=[];
-        fieldList.push({type:'string',value:'platformName',text:'平台名称',dictCode:''})
-        fieldList.push({type:'string',value:'platformDir',text:'平台路径',dictCode:''})
+        fieldList.push({type:'string',value:'serverName',text:'名称',dictCode:''})
+        fieldList.push({type:'string',value:'serverDesc',text:'描述',dictCode:''})
+        fieldList.push({type:'string',value:'serverIp',text:'IP地址',dictCode:''})
+        fieldList.push({type:'string',value:'serverHost',text:'主机名',dictCode:''})
+        fieldList.push({type:'string',value:'serverPassword',text:'密码',dictCode:''})
+        fieldList.push({type:'int',value:'serverStatus',text:'状态信息',dictCode:''})
+        fieldList.push({type:'string',value:'serverCpuUsageRate',text:'CPU使用率',dictCode:''})
+        fieldList.push({type:'string',value:'serverAvailableStorage',text:'存储剩余空间',dictCode:''})
         this.superFieldList = fieldList
       }
     }

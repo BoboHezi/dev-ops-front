@@ -122,11 +122,11 @@
           }
         ],
         url: {
-          list: "/devops/devopsBuild/list",
-          delete: "/devops/devopsBuild/delete",
-          deleteBatch: "/devops/devopsBuild/deleteBatch",
-          exportXlsUrl: "/devops/devopsBuild/exportXls",
-          importExcelUrl: "devops/devopsBuild/importExcel",
+          list: "/devopsold/devopsBuild/list",
+          delete: "/devopsold/devopsBuild/delete",
+          deleteBatch: "/devopsold/devopsBuild/deleteBatch",
+          exportXlsUrl: "/devopsold/devopsBuild/exportXls",
+          importExcelUrl: "devopsold/devopsBuild/importExcel",
           
         },
         dictOptions:{},

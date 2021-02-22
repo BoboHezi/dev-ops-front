@@ -4,18 +4,23 @@
       <a-form :form="form" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-item label="服务器ip" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['serversIp']" placeholder="请输入服务器ip"  ></a-input>
+            <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['codeName']" placeholder="请输入名称"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="主机名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['serversHost']" placeholder="请输入主机名"  ></a-input>
+            <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['codeDesc']" placeholder="请输入描述"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="服务器密码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['serversPassword']" placeholder="请输入服务器密码"  ></a-input>
+            <a-form-item label="repo路径" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['codeRepoUrl', validatorRules.codeRepoUrl]" placeholder="请输入repo路径"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="服务器IP对应id" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['codeServerId', validatorRules.codeServerId]" :trigger-change="true" dictCode="devops_server,server_ip,id" placeholder="请选择服务器IP对应id" />
             </a-form-item>
           </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
@@ -34,7 +39,7 @@
   import { validateDuplicateValue } from '@/utils/util'
 
   export default {
-    name: 'ServersFormForm',
+    name: 'DevopsCodeForm',
     components: {
     },
     props: {
@@ -71,11 +76,21 @@
         },
         confirmLoading: false,
         validatorRules: {
+          codeRepoUrl: {
+            rules: [
+              { required: true, message: '请输入repo路径!'},
+            ]
+          },
+          codeServerId: {
+            rules: [
+              { required: true, message: '请输入服务器IP对应id!'},
+            ]
+          },
         },
         url: {
-          add: "/devops/serversForm/add",
-          edit: "/devops/serversForm/edit",
-          queryById: "/devops/serversForm/queryById"
+          add: "/code/devopsCode/add",
+          edit: "/code/devopsCode/edit",
+          queryById: "/code/devopsCode/queryById"
         }
       }
     },
@@ -111,7 +126,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'serversIp','serversHost','serversPassword','serversPlatform'))
+          this.form.setFieldsValue(pick(this.model,'codeName','codeDesc','codeRepoUrl','codeServerId','codeDir'))
         })
       },
       //渲染流程表单数据
@@ -157,7 +172,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'serversIp','serversHost','serversPassword','serversPlatform'))
+        this.form.setFieldsValue(pick(row,'codeName','codeDesc','codeRepoUrl','codeServerId','codeDir'))
       },
     }
   }

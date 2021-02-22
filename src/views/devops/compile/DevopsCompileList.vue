@@ -4,26 +4,6 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="服务器IP">
-              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.serversIp" dictCode="servers_form,servers_ip,servers_ip"/>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="平台名称">
-              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.serversPlatformName" dictCode="platform_form,platform_name,platform_name"/>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -32,7 +12,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button hidden type="primary" icon="download" @click="handleExportXls('服务器与平台')">导出</a-button>
+      <a-button hidden type="primary" icon="download" @click="handleExportXls('编译管理')">导出</a-button>
       <a-upload hidden name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button hidden type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -42,13 +22,13 @@
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
-        <a-button hidden style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;" hidden>
+      <div hidden class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -90,10 +70,7 @@
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a>删除</a>
-          </a-popconfirm>
-          <a-dropdown hidden>
+          <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -111,7 +88,7 @@
       </a-table>
     </div>
 
-    <servers-platform-modal ref="modalForm" @ok="modalFormOk"></servers-platform-modal>
+    <devops-compile-modal ref="modalForm" @ok="modalFormOk"></devops-compile-modal>
   </a-card>
 </template>
 
@@ -120,22 +97,21 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import ServersPlatformModal from './modules/ServersPlatformModal'
-  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import DevopsCompileModal from './modules/DevopsCompileModal'
 
   export default {
-    name: 'ServersPlatformList',
+    name: 'DevopsCompileList',
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      ServersPlatformModal
+      DevopsCompileModal
     },
     data () {
       return {
-        description: '服务器与平台管理页面',
+        description: '编译管理管理页面',
         // 表头
         columns: [
           {
-            title: '编号',
+            title: 'TaskId',
             dataIndex: '',
             key:'rowIndex',
             width:60,
@@ -145,19 +121,67 @@
             }
           },
           {
-            title:'服务器IP',
+            title:'名称',
             align:"center",
-            dataIndex: 'serversIp'
+            dataIndex: 'compileName'
           },
           {
-            title:'平台名称',
+            title:'任务ID',
             align:"center",
-            dataIndex: 'serversPlatformName'
+            dataIndex: 'compileBuildId'
           },
           {
-            title:'平台路径',
+            title:'描述',
             align:"center",
-            dataIndex: 'serversPlatformDir'
+            dataIndex: 'compileDesc'
+          },
+          {
+            title:'项目，平台，版本号',
+            align:"center",
+            dataIndex: 'compileProjectId'
+          },
+          {
+            title:'版本类型',
+            align:"center",
+            dataIndex: 'compileVariant'
+          },
+          {
+            title:'编译动作',
+            align:"center",
+            dataIndex: 'compileAction'
+          },
+          {
+            title:'是否签名',
+            align:"center",
+            dataIndex: 'compileIsSign'
+          },
+          {
+            title:'是否验收',
+            align:"center",
+            dataIndex: 'compileIsVerify'
+          },
+          {
+            title:'任务状态',
+            align:"center",
+            dataIndex: 'compileStatus'
+          },
+          {
+            title:'编译日志',
+            align:"center",
+            dataIndex: 'compileLogUrl'
+          },
+          {
+            title:'邮箱通知抄送',
+            align:"center",
+            dataIndex: 'compileSendEmail'
+          },
+          {
+            title:'编译开始时间',
+            align:"center",
+            dataIndex: 'compileBuildTime',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title: '操作',
@@ -169,11 +193,11 @@
           }
         ],
         url: {
-          list: "/devops/serversPlatform/list",
-          delete: "/devops/serversPlatform/delete",
-          deleteBatch: "/devops/serversPlatform/deleteBatch",
-          exportXlsUrl: "/devops/serversPlatform/exportXls",
-          importExcelUrl: "devops/serversPlatform/importExcel",
+          list: "/compile/devopsCompile/list",
+          delete: "/compile/devopsCompile/delete",
+          deleteBatch: "/compile/devopsCompile/deleteBatch",
+          exportXlsUrl: "/compile/devopsCompile/exportXls",
+          importExcelUrl: "compile/devopsCompile/importExcel",
           
         },
         dictOptions:{},
@@ -193,9 +217,18 @@
       },
       getSuperFieldList(){
         let fieldList=[];
-        fieldList.push({type:'string',value:'serversIp',text:'服务器IP',dictCode:''})
-        fieldList.push({type:'string',value:'serversPlatformName',text:'平台名称',dictCode:''})
-        fieldList.push({type:'string',value:'serversPlatformDir',text:'平台路径',dictCode:''})
+        fieldList.push({type:'string',value:'compileName',text:'名称',dictCode:''})
+        fieldList.push({type:'int',value:'compileBuildId',text:'任务ID',dictCode:''})
+        fieldList.push({type:'string',value:'compileDesc',text:'描述',dictCode:''})
+        fieldList.push({type:'string',value:'compileProjectId',text:'项目，平台，版本号',dictCode:''})
+        fieldList.push({type:'string',value:'compileVariant',text:'版本类型',dictCode:''})
+        fieldList.push({type:'string',value:'compileAction',text:'编译动作',dictCode:''})
+        fieldList.push({type:'int',value:'compileIsSign',text:'是否签名',dictCode:''})
+        fieldList.push({type:'int',value:'compileIsVerify',text:'是否验收',dictCode:''})
+        fieldList.push({type:'int',value:'compileStatus',text:'任务状态',dictCode:''})
+        fieldList.push({type:'string',value:'compileLogUrl',text:'编译日志',dictCode:''})
+        fieldList.push({type:'string',value:'compileSendEmail',text:'邮箱通知抄送',dictCode:''})
+        fieldList.push({type:'date',value:'compileBuildTime',text:'编译开始时间'})
         this.superFieldList = fieldList
       }
     }
