@@ -13,9 +13,10 @@
               <a-input v-decorator="['projectDesc']" placeholder="请输入描述"  ></a-input>
             </a-form-item>
           </a-col>
+          <!--    todo 去重        -->
           <a-col :span="24">
             <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['projectCodeId']" placeholder="请输入平台"  ></a-input>
+              <j-dict-select-tag type="list" v-decorator="['projectCodeId', validatorRules.codeServerId]" :trigger-change="true" dictCode="devops_code,code_name,id" placeholder="请选择平台" />
             </a-form-item>
           </a-col>
           <a-col :span="24">

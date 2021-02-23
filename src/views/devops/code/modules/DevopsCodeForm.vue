@@ -4,8 +4,8 @@
       <a-form :form="form" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['codeName']" placeholder="请输入名称"  ></a-input>
+            <a-form-item label="代码平台名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['codeName']" placeholder="请输入平台名称"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">

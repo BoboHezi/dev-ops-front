@@ -30,17 +30,12 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="是否签名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="['compileIsSign', validatorRules.compileIsSign]" placeholder="请输入是否签名" style="width: 100%" />
+              <j-switch v-decorator="['compileIsSign']"  ></j-switch>
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="是否验收" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="['compileIsVerify', validatorRules.compileIsVerify]" placeholder="请输入是否验收" style="width: 100%" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-item label="任务状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="['compileStatus', validatorRules.compileStatus]" placeholder="请输入任务状态" style="width: 100%" />
+              <j-switch v-decorator="['compileIsVerify']"  ></j-switch>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -131,11 +126,6 @@
               { required: true, message: '请输入是否验收!'},
             ]
           },
-          compileStatus: {
-            rules: [
-              { required: true, message: '请输入任务状态!'},
-            ]
-          },
           compileSendEmail: {
             rules: [
               { required: true, message: '请输入邮箱通知抄送!'},
@@ -181,7 +171,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compileProjectId','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
         })
       },
       //渲染流程表单数据
@@ -227,7 +217,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compileProjectId','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
       },
     }
   }

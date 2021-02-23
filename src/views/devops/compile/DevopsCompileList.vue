@@ -4,6 +4,31 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="服务器IP">
+              <j-dict-select-tag placeholder="请选择服务器IP" v-model="queryParam.compileServerIp" dictCode="devops_server,server_ip,server_ip"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="平台名称">
+              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.compileProjectId" dictCode="devops_code,code_name,id"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="项目名称">
+              <j-input placeholder="输入项目名称模糊查询" v-model="queryParam.compileName"></j-input>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a hidden @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -66,11 +91,23 @@
           </a-button>
         </template>
 
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+        <span slot="checkLog" slot-scope="text, record">
+          <a @click="handleCheckLog(record)">查看</a>
+        </span>
 
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleCompile(record)" v-if="record.compileStatus==0">开始编译</a>
+          <a @click="handleCompile(record)" v-if="record.compileStatus==-1">重新编译</a>
+          <a @click="handleStopCompile(record)" v-if="record.compileStatus==1">停止编译</a>
+          <a @click="handleStopCompile(record)" v-if="record.compileStatus==2">停止编译</a>
+          <a @click="null" v-if="record.compileStatus==3">编译完成</a>
           <a-divider type="vertical" />
-          <a-dropdown>
+
+          <a @click="handleEdit(record)">编辑</a>
+          <a-divider type="vertical" />
+          <a @click="handleDetail(record)">详情</a>
+
+          <a-dropdown hidden>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -84,6 +121,14 @@
             </a-menu>
           </a-dropdown>
         </span>
+        <!-- 状态渲染模板 -->
+        <template slot="customRenderStatus" slot-scope="compileStatus">
+          <a-tag v-if="compileStatus==-1" color="red">编译报错</a-tag>
+          <a-tag v-if="compileStatus==0" color="orange">初始化</a-tag>
+          <a-tag v-if="compileStatus==1" color="green">正在连接</a-tag>
+          <a-tag v-if="compileStatus==2" color="blue">编译中</a-tag>
+          <a-tag v-if="compileStatus==3" color="blue">编译成功</a-tag>
+        </template>
 
       </a-table>
     </div>
@@ -98,11 +143,14 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import DevopsCompileModal from './modules/DevopsCompileModal'
+  import { filterMultiDictText } from '@comp/dict/JDictSelectUtil'
+  import AreaChartTy from '@comp/chart/AreaChartTy'
 
   export default {
     name: 'DevopsCompileList',
     mixins:[JeecgListMixin, mixinDevice],
     components: {
+      AreaChartTy,
       DevopsCompileModal
     },
     data () {
@@ -112,33 +160,28 @@
         columns: [
           {
             title: 'TaskId',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
+            dataIndex: 'compileBuildId',
             align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
           },
           {
-            title:'名称',
+            title:'项目',
             align:"center",
-            dataIndex: 'compileName'
+            dataIndex: 'compileProjectIdProject'
           },
           {
-            title:'任务ID',
+            title:'平台',
             align:"center",
-            dataIndex: 'compileBuildId'
+            dataIndex: 'compileProjectIdPlatform'
           },
           {
-            title:'描述',
+            title:'版本号',
             align:"center",
-            dataIndex: 'compileDesc'
+            dataIndex: 'compileProjectIdNumber'
           },
           {
-            title:'项目，平台，版本号',
+            title:'编译服务器ip',
             align:"center",
-            dataIndex: 'compileProjectId'
+            dataIndex: 'compileServerIp'
           },
           {
             title:'版本类型',
@@ -153,22 +196,28 @@
           {
             title:'是否签名',
             align:"center",
-            dataIndex: 'compileIsSign'
+            dataIndex: 'compileIsSign',
+            customRender: (text) => (text ? filterMultiDictText(this.dictOptions['compileIsSign'], text) : ''),
           },
           {
             title:'是否验收',
             align:"center",
-            dataIndex: 'compileIsVerify'
+            dataIndex: 'compileIsVerify',
+            customRender: (text) => (text ? filterMultiDictText(this.dictOptions['compileIsVerify'], text) : ''),
           },
           {
             title:'任务状态',
             align:"center",
-            dataIndex: 'compileStatus'
-          },
-          {
-            title:'编译日志',
-            align:"center",
-            dataIndex: 'compileLogUrl'
+            dataIndex: 'compileStatus',
+            scopedSlots: { customRender: 'customRenderStatus' },
+            filterMultiple: false,
+            filters: [
+              { text: '编译报错', value: '-1' },
+              { text: '初始化', value: '0' },
+              { text: '正在连接', value: '1' },
+              { text: '编译中', value: '2' },
+              { text: '编译成功', value: '3' },
+            ]
           },
           {
             title:'邮箱通知抄送',
@@ -182,6 +231,14 @@
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
+          },
+          {
+            title:'编译日志',
+            dataIndex: 'checkLog',
+            align:"center",
+            fixed:"right",
+            width:100,
+            scopedSlots: { customRender: 'checkLog' }
           },
           {
             title: '操作',
@@ -198,14 +255,16 @@
           deleteBatch: "/compile/devopsCompile/deleteBatch",
           exportXlsUrl: "/compile/devopsCompile/exportXls",
           importExcelUrl: "compile/devopsCompile/importExcel",
-          
+          autoCompile:"/compile/devopsCompile/autoCompile"
         },
         dictOptions:{},
         superFieldList:[],
       }
     },
     created() {
-    this.getSuperFieldList();
+      this.$set(this.dictOptions, 'compileIsSign', [{text:'是',value:'Y'},{text:'否',value:'N'}])
+      this.$set(this.dictOptions, 'compileIsVerify', [{text:'是',value:'Y'},{text:'否',value:'N'}])
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl: function(){
@@ -221,15 +280,45 @@
         fieldList.push({type:'int',value:'compileBuildId',text:'任务ID',dictCode:''})
         fieldList.push({type:'string',value:'compileDesc',text:'描述',dictCode:''})
         fieldList.push({type:'string',value:'compileProjectId',text:'项目，平台，版本号',dictCode:''})
+	      fieldList.push({type:'string',value:'compileServerIp',text:'编译服务器ip',dictCode:''})
         fieldList.push({type:'string',value:'compileVariant',text:'版本类型',dictCode:''})
         fieldList.push({type:'string',value:'compileAction',text:'编译动作',dictCode:''})
-        fieldList.push({type:'int',value:'compileIsSign',text:'是否签名',dictCode:''})
-        fieldList.push({type:'int',value:'compileIsVerify',text:'是否验收',dictCode:''})
+        fieldList.push({type:'string',value:'compileIsSign',text:'是否签名',dictCode:''})
+        fieldList.push({type:'string',value:'compileIsVerify',text:'是否验收',dictCode:''})
         fieldList.push({type:'int',value:'compileStatus',text:'任务状态',dictCode:''})
         fieldList.push({type:'string',value:'compileLogUrl',text:'编译日志',dictCode:''})
         fieldList.push({type:'string',value:'compileSendEmail',text:'邮箱通知抄送',dictCode:''})
         fieldList.push({type:'date',value:'compileBuildTime',text:'编译开始时间'})
         this.superFieldList = fieldList
+      },
+      handleCompile(mRecord) {
+        alert(mRecord.projectBuildAction)
+        this.$http.post(
+          this.url.autoCompile, {
+            id: mRecord.id,
+            compileBuildId: mRecord.compileBuildId,
+            compileName: mRecord.compileName,
+            compileProjectId: mRecord.compileProjectId,
+            compileServerIp: mRecord.compileServerIp,
+            compileVariant: mRecord.compileVariant,
+            compileAction: mRecord.compileAction,
+            compileIsSign: mRecord.compileIsSign,
+            compileIsVerify: mRecord.compileIsVerify,
+            compileStatus: mRecord.compileStatus,
+            compileSendEmail: mRecord.compileSendEmail,
+          })
+          .then(function(res) {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+            } else {
+              this.$message.warning(res.message)
+            }
+          })
+          .catch(function(response) {
+              console.log(response)
+            }
+          )
       }
     }
   }

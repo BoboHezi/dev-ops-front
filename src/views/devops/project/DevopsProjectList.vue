@@ -4,6 +4,26 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="平台名称">
+              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.projectCodeId" dictCode="devops_code,code_name,id"/>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="项目名称">
+              <j-input placeholder="输入项目名称模糊查询" v-model="queryParam.projectName"></j-input>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a hidden @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -70,7 +90,8 @@
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
-          <a-dropdown>
+          <a @click="handleDetail(record)">详情</a>
+          <a-dropdown hidden>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -126,14 +147,9 @@
             dataIndex: 'projectName'
           },
           {
-            title:'描述',
-            align:"center",
-            dataIndex: 'projectDesc'
-          },
-          {
             title:'平台',
             align:"center",
-            dataIndex: 'projectCodeId'
+            dataIndex: 'projectCodeId_dictText'
           },
           {
             title:'项目版本号',
@@ -191,7 +207,7 @@
         let fieldList=[];
         fieldList.push({type:'string',value:'projectName',text:'名称',dictCode:''})
         fieldList.push({type:'string',value:'projectDesc',text:'描述',dictCode:''})
-        fieldList.push({type:'string',value:'projectCodeId',text:'平台',dictCode:''})
+        fieldList.push({type:'string',value:'projectCodeId',text:'平台',dictCode:'devops_code,code_name,id'})
         fieldList.push({type:'string',value:'projectVersionNumber',text:'项目版本号',dictCode:''})
         fieldList.push({type:'string',value:'projectNumber',text:'项目号',dictCode:''})
         fieldList.push({type:'string',value:'projectCustomNumber',text:'客户号',dictCode:''})

@@ -4,6 +4,21 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="服务器IP">
+              <j-input placeholder="输入服务器IP模糊查询" v-model="queryParam.serverIp"></j-input>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a hidden @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -70,7 +85,8 @@
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
-          <a-dropdown>
+          <a @click="handleDetail(record)">详情</a>
+          <a-dropdown hidden>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
@@ -84,6 +100,12 @@
             </a-menu>
           </a-dropdown>
         </span>
+        <!-- 状态渲染模板 -->
+        <template slot="customRenderStatus" slot-scope="serverStatus">
+          <a-tag v-if="serverStatus==0" color="green">未使用</a-tag>
+          <a-tag v-if="serverStatus==1" color="orange">已占用</a-tag>
+          <a-tag v-if="serverStatus==2" color="blue">已关机</a-tag>
+        </template>
 
       </a-table>
     </div>
@@ -121,16 +143,6 @@
             }
           },
           {
-            title:'名称',
-            align:"center",
-            dataIndex: 'serverName'
-          },
-          {
-            title:'描述',
-            align:"center",
-            dataIndex: 'serverDesc'
-          },
-          {
             title:'IP地址',
             align:"center",
             dataIndex: 'serverIp'
@@ -148,7 +160,14 @@
           {
             title:'状态信息',
             align:"center",
-            dataIndex: 'serverStatus'
+            dataIndex: 'serverStatus',
+            scopedSlots: { customRender: 'customRenderStatus' },
+            filterMultiple: false,
+            filters: [
+              { text: '未使用', value: '0' },
+              { text: '已占用', value: '1' },
+              { text: '已关机', value: '2' },
+            ]
           },
           {
             title:'CPU使用率',
