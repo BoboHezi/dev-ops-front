@@ -14,18 +14,32 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="项目，平台，版本号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['compileProjectId', validatorRules.compileProjectId]" placeholder="请输入项目，平台，版本号"  ></a-input>
+            <a-form-item label="项目，平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-tree-select
+                ref="treeSelect"
+                placeholder="请选择项目，平台"
+                v-decorator="['pid', validatorRules.pid]"
+                dict="devops_project,project_name,id"
+                pidField="compile_project_id"
+                pidValue="0">
+              </j-tree-select>
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="版本类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['compileVariant', validatorRules.compileVariant]" placeholder="请输入版本类型"  ></a-input>
+              <a-select  v-decorator="['compileVariant',validatorRules.compileVariant]" placeholder="请选择" default-value="u">
+                <a-select-option value="u">user</a-select-option>
+                <a-select-option value="d">userdebug</a-select-option>
+                <a-select-option value="e">eng</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="编译动作" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['compileAction', validatorRules.compileAction]" placeholder="请输入编译动作"  ></a-input>
+              <a-select  v-decorator="['compileAction',validatorRules.compileAction]" placeholder="请选择" default-value="new">
+                <a-select-option value="new">new</a-select-option>
+                <a-select-option value="ota">ota</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -57,10 +71,11 @@
   import { httpAction, getAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
+  import JTreeSelect from '@comp/jeecg/JTreeSelect'
 
   export default {
     name: 'DevopsCompileForm',
-    components: {
+    components: { JTreeSelect
     },
     props: {
       //流程表单data
@@ -85,6 +100,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
+        treeValue:'',
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -131,6 +147,7 @@
               { required: true, message: '请输入邮箱通知抄送!'},
             ]
           },
+          pid:{},
         },
         url: {
           add: "/compile/devopsCompile/add",

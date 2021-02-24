@@ -129,7 +129,17 @@
           <a-tag v-if="compileStatus==2" color="blue">编译中</a-tag>
           <a-tag v-if="compileStatus==3" color="blue">编译成功</a-tag>
         </template>
-
+<!--        &lt;!&ndash; 状态渲染模板 &ndash;&gt;-->
+<!--        <template slot="customRenderVariantStatus" slot-scope="compileVariant">-->
+<!--          <a-tag v-if="compileVariant=='new'" color="orange">new</a-tag>-->
+<!--          <a-tag v-if="compileVariant=='ota'" color="orange">ota</a-tag>-->
+<!--        </template>-->
+<!--        &lt;!&ndash; 状态渲染模板 &ndash;&gt;-->
+<!--        <template slot="customRenderActionStatus" slot-scope="compileAction">-->
+<!--          <a-tag v-if="compileAction=='u'" color="orange">user</a-tag>-->
+<!--          <a-tag v-if="compileAction=='d'" color="orange">userdebug</a-tag>-->
+<!--          <a-tag v-if="compileAction=='e'" color="green">eng</a-tag>-->
+<!--        </template>-->
       </a-table>
     </div>
 
@@ -186,12 +196,33 @@
           {
             title:'版本类型',
             align:"center",
-            dataIndex: 'compileVariant'
+            dataIndex: 'compileVariant',
+            customRender: function (text) {
+              if(text=='ota') {
+                return "ota";
+              }
+              if(text=='new') {
+                return "new";
+              }
+            }
           },
           {
             title:'编译动作',
             align:"center",
-            dataIndex: 'compileAction'
+            dataIndex: 'compileAction',
+            scopedSlots: { customRender: 'customRenderActionStatus' },
+            filterMultiple: false,
+            customRender: function (text) {
+              if(text=='u') {
+                return "user";
+              }
+              if(text=='d') {
+                return "userdebug";
+              }
+              if(text=='e') {
+                return "eng";
+              }
+            }
           },
           {
             title:'是否签名',
@@ -255,7 +286,8 @@
           deleteBatch: "/compile/devopsCompile/deleteBatch",
           exportXlsUrl: "/compile/devopsCompile/exportXls",
           importExcelUrl: "compile/devopsCompile/importExcel",
-          autoCompile:"/compile/devopsCompile/autoCompile"
+          autoCompile:"/compile/devopsCompile/autoCompile",
+          stopCompile:"/compile/devopsCompile/stopCompile"
         },
         dictOptions:{},
         superFieldList:[],
@@ -291,8 +323,37 @@
         fieldList.push({type:'date',value:'compileBuildTime',text:'编译开始时间'})
         this.superFieldList = fieldList
       },
+      handleStopCompile(mRecord) {
+        alert("停止编译")
+        this.$http.post(
+          this.url.stopCompile, {
+            id: mRecord.id,
+            compileBuildId: mRecord.compileBuildId,
+            compileName: mRecord.compileName,
+            compileProjectId: mRecord.compileProjectId,
+            compileServerIp: mRecord.compileServerIp,
+            compileVariant: mRecord.compileVariant,
+            compileAction: mRecord.compileAction,
+            compileIsSign: mRecord.compileIsSign,
+            compileIsVerify: mRecord.compileIsVerify,
+            compileStatus: mRecord.compileStatus,
+            compileSendEmail: mRecord.compileSendEmail,
+          })
+          .then(function(res) {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+            } else {
+              this.$message.warning(res.message)
+            }
+          })
+          .catch(function(response) {
+              console.log(response)
+            }
+          )
+      },
       handleCompile(mRecord) {
-        alert(mRecord.projectBuildAction)
+        alert(mRecord.compileAction)
         this.$http.post(
           this.url.autoCompile, {
             id: mRecord.id,
