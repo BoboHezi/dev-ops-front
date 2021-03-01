@@ -149,7 +149,7 @@
           {
             title:'平台',
             align:"center",
-            dataIndex: 'projectCodeId'
+            dataIndex: 'projectCodeId_dictText'
           },
           {
             title:'项目版本号',

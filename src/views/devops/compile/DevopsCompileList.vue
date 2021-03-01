@@ -129,17 +129,6 @@
           <a-tag v-if="compileStatus==2" color="blue">编译中</a-tag>
           <a-tag v-if="compileStatus==3" color="blue">编译成功</a-tag>
         </template>
-<!--        &lt;!&ndash; 状态渲染模板 &ndash;&gt;-->
-<!--        <template slot="customRenderVariantStatus" slot-scope="compileVariant">-->
-<!--          <a-tag v-if="compileVariant=='new'" color="orange">new</a-tag>-->
-<!--          <a-tag v-if="compileVariant=='ota'" color="orange">ota</a-tag>-->
-<!--        </template>-->
-<!--        &lt;!&ndash; 状态渲染模板 &ndash;&gt;-->
-<!--        <template slot="customRenderActionStatus" slot-scope="compileAction">-->
-<!--          <a-tag v-if="compileAction=='u'" color="orange">user</a-tag>-->
-<!--          <a-tag v-if="compileAction=='d'" color="orange">userdebug</a-tag>-->
-<!--          <a-tag v-if="compileAction=='e'" color="green">eng</a-tag>-->
-<!--        </template>-->
       </a-table>
     </div>
 
@@ -176,12 +165,12 @@
           {
             title:'项目',
             align:"center",
-            dataIndex: 'compileProjectIdProject'
+            dataIndex: 'compileProjectId'
           },
           {
             title:'平台',
             align:"center",
-            dataIndex: 'compileProjectIdPlatform'
+            dataIndex: 'compilePlatformId'
           },
           {
             title:'版本号',
@@ -198,11 +187,14 @@
             align:"center",
             dataIndex: 'compileVariant',
             customRender: function (text) {
-              if(text=='ota') {
-                return "ota";
+              if(text=='u') {
+                return "user";
               }
-              if(text=='new') {
-                return "new";
+              if(text=='d') {
+                return "userdebug";
+              }
+              if(text=='e') {
+                return "eng";
               }
             }
           },
@@ -213,14 +205,11 @@
             scopedSlots: { customRender: 'customRenderActionStatus' },
             filterMultiple: false,
             customRender: function (text) {
-              if(text=='u') {
-                return "user";
+              if(text=='ota') {
+                return "ota";
               }
-              if(text=='d') {
-                return "userdebug";
-              }
-              if(text=='e') {
-                return "eng";
+              if(text=='new') {
+                return "new";
               }
             }
           },
@@ -311,7 +300,8 @@
         fieldList.push({type:'string',value:'compileName',text:'名称',dictCode:''})
         fieldList.push({type:'int',value:'compileBuildId',text:'任务ID',dictCode:''})
         fieldList.push({type:'string',value:'compileDesc',text:'描述',dictCode:''})
-        fieldList.push({type:'string',value:'compileProjectId',text:'项目，平台，版本号',dictCode:''})
+        fieldList.push({type:'string',value:'compilePlatformId',text:'平台',dictCode:''})
+        fieldList.push({type:'string',value:'compileProjectId',text:'项目，版本号',dictCode:''})
 	      fieldList.push({type:'string',value:'compileServerIp',text:'编译服务器ip',dictCode:''})
         fieldList.push({type:'string',value:'compileVariant',text:'版本类型',dictCode:''})
         fieldList.push({type:'string',value:'compileAction',text:'编译动作',dictCode:''})

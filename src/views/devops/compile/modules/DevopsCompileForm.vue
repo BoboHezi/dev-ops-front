@@ -14,15 +14,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="项目，平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-tree-select
-                ref="treeSelect"
-                placeholder="请选择项目，平台"
-                v-decorator="['pid', validatorRules.pid]"
-                dict="devops_project,project_name,id"
-                pidField="compile_project_id"
-                pidValue="0">
-              </j-tree-select>
+            <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['compilePlatformId', validatorRules.compilePlatformId]" :trigger-change="true" dictCode="devops_code,code_name,code_name" placeholder="请选择平台" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="项目" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['compileProjectId', validatorRules.compileProjectId]" :trigger-change="true" dictCode="devops_project,project_name,project_name" placeholder="请选择项目" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -117,9 +115,14 @@
               { required: true, message: '请输入名称!'},
             ]
           },
+          compilePlatformId: {
+            rules: [
+              { required: true, message: '请输入平台!'},
+            ]
+          },
           compileProjectId: {
             rules: [
-              { required: true, message: '请输入项目，平台，版本号!'},
+              { required: true, message: '请选择项目!'},
             ]
           },
           compileVariant: {
@@ -188,7 +191,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compilePlatformId','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
         })
       },
       //渲染流程表单数据
@@ -234,7 +237,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compilePlatformId','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
       },
     }
   }

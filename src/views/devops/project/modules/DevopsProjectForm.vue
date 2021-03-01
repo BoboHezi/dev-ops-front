@@ -5,23 +5,13 @@
         <a-row>
           <a-col :span='24'>
             <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-tree-select
-                ref="treeSelect"
-                placeholder="请选择平台"
-                v-decorator="['pid', validatorRules.pid]"
-                dict="devops_project,project_name,id"
-                pidField="pid"
-                pidValue="0">
-              </j-tree-select>
+              <j-dict-select-tag type="list" v-decorator="['projectCodeId', validatorRules.projectCodeId]" :trigger-change="true" dictCode="devops_code,code_name,id" placeholder="请选择平台" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'projectName', validatorRules.projectName]" placeholder="请输入项目名称"></a-input>
             </a-form-item>
-<!--            <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-<!--              <a-input v-decorator="['projectName', validatorRules.projectName]" placeholder="请输入项目名称"  ></a-input>-->
-<!--            </a-form-item>-->
           </a-col>
           <a-col :span="24">
             <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -105,12 +95,12 @@
         validatorRules: {
           projectCodeId: {
             rules: [
-              { required: true, message: '请输入项目名称!'},
+              { required: true, message: '请选择平台!'},
             ]
           },
           projectName: {
             rules: [
-              { required: true, message: '请选择平台!'},
+              { required: true, message: '请输入项目名称!'},
             ]
           },
           pid:{},
@@ -156,7 +146,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'projectName','projectDesc','pid','projectCodeId','projectVersionNumber','projectNumber','projectCustomNumber','projectChannelNumber'))
+          this.form.setFieldsValue(pick(this.model,'projectName','projectDesc','projectCodeId','projectVersionNumber','projectNumber','projectCustomNumber','projectChannelNumber'))
         })
       },
       //渲染流程表单数据
