@@ -3,20 +3,29 @@
     <j-form-container :disabled="formDisabled">
       <a-form :form="form" slot="detail">
         <a-row>
-          <a-col :span="24">
-            <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['projectName']" placeholder="请输入名称"  ></a-input>
+          <a-col :span='24'>
+            <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-tree-select
+                ref="treeSelect"
+                placeholder="请选择平台"
+                v-decorator="['pid', validatorRules.pid]"
+                dict="devops_project,project_name,id"
+                pidField="pid"
+                pidValue="0">
+              </j-tree-select>
             </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'projectName', validatorRules.projectName]" placeholder="请输入项目名称"></a-input>
+            </a-form-item>
+<!--            <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--              <a-input v-decorator="['projectName', validatorRules.projectName]" placeholder="请输入项目名称"  ></a-input>-->
+<!--            </a-form-item>-->
           </a-col>
           <a-col :span="24">
             <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="['projectDesc']" placeholder="请输入描述"  ></a-input>
-            </a-form-item>
-          </a-col>
-          <!--    todo 去重        -->
-          <a-col :span="24">
-            <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['projectCodeId', validatorRules.codeServerId]" :trigger-change="true" dictCode="devops_code,code_name,id" placeholder="请选择平台" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -53,10 +62,12 @@
   import { httpAction, getAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
+  import JTreeSelect from '@/components/jeecg/JTreeSelect'
 
   export default {
     name: 'DevopsProjectForm',
     components: {
+      JTreeSelect
     },
     props: {
       //流程表单data
@@ -92,12 +103,25 @@
         },
         confirmLoading: false,
         validatorRules: {
+          projectCodeId: {
+            rules: [
+              { required: true, message: '请输入项目名称!'},
+            ]
+          },
+          projectName: {
+            rules: [
+              { required: true, message: '请选择平台!'},
+            ]
+          },
+          pid:{},
+          name:{rules: [{ required: true, message: '请输入类型名称!' }]}
         },
         url: {
           add: "/project/devopsProject/add",
           edit: "/project/devopsProject/edit",
           queryById: "/project/devopsProject/queryById"
-        }
+        },
+        pidField:"pid"
       }
     },
     computed: {
@@ -132,7 +156,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'projectName','projectDesc','projectCodeId','projectVersionNumber','projectNumber','projectCustomNumber','projectChannelNumber'))
+          this.form.setFieldsValue(pick(this.model,'projectName','projectDesc','pid','projectCodeId','projectVersionNumber','projectNumber','projectCustomNumber','projectChannelNumber'))
         })
       },
       //渲染流程表单数据

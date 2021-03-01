@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="平台名称">
-              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.projectCodeId" dictCode="devops_code,code_name,id"/>
+              <j-dict-select-tag placeholder="请选择平台名称" v-model="queryParam.projectCodeId" dictCode="devops_code,code_name,code_name"/>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -142,14 +142,14 @@
             }
           },
           {
-            title:'名称',
+            title:'项目名称',
             align:"center",
             dataIndex: 'projectName'
           },
           {
             title:'平台',
             align:"center",
-            dataIndex: 'projectCodeId_dictText'
+            dataIndex: 'projectCodeId'
           },
           {
             title:'项目版本号',
@@ -207,7 +207,7 @@
         let fieldList=[];
         fieldList.push({type:'string',value:'projectName',text:'名称',dictCode:''})
         fieldList.push({type:'string',value:'projectDesc',text:'描述',dictCode:''})
-        fieldList.push({type:'string',value:'projectCodeId',text:'平台',dictCode:'devops_code,code_name,id'})
+        fieldList.push({type:'string',value:'projectCodeId',text:'平台',dictCode:''})
         fieldList.push({type:'string',value:'projectVersionNumber',text:'项目版本号',dictCode:''})
         fieldList.push({type:'string',value:'projectNumber',text:'项目号',dictCode:''})
         fieldList.push({type:'string',value:'projectCustomNumber',text:'客户号',dictCode:''})
