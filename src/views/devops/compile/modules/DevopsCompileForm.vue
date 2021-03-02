@@ -25,7 +25,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="版本类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select  v-decorator="['compileVariant',validatorRules.compileVariant]" placeholder="请选择" default-value="u">
+              <a-select v-decorator="['compileVariant' ,{  initialValue:'u' }]" >
                 <a-select-option value="u">user</a-select-option>
                 <a-select-option value="d">userdebug</a-select-option>
                 <a-select-option value="e">eng</a-select-option>
@@ -34,7 +34,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="编译动作" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select  v-decorator="['compileAction',validatorRules.compileAction]" placeholder="请选择" default-value="new">
+              <a-select default-value="new" v-decorator="['compileAction',{  initialValue:'ota' }]" >
                 <a-select-option value="new">new</a-select-option>
                 <a-select-option value="ota">ota</a-select-option>
               </a-select>
@@ -42,12 +42,12 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="是否签名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-switch v-decorator="['compileIsSign']"  ></j-switch>
+              <j-switch v-decorator="['compileIsSign',{  initialValue:'Y' }]"  ></j-switch>
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="是否验收" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-switch v-decorator="['compileIsVerify']"  ></j-switch>
+              <j-switch v-decorator="['compileIsVerify',{  initialValue:'Y' }]"  ></j-switch>
             </a-form-item>
           </a-col>
           <a-col :span="24">

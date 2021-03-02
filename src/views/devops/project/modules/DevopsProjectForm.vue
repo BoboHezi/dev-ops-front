@@ -5,7 +5,7 @@
         <a-row>
           <a-col :span='24'>
             <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['projectCodeId', validatorRules.projectCodeId]" :trigger-change="true" dictCode="devops_code,code_name,id" placeholder="请选择平台" />
+              <j-dict-select-tag type="list" v-decorator="['projectCodeId', validatorRules.projectCodeId]" :trigger-change="true" dictCode="devops_code,code_name,code_name" placeholder="请选择平台" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
