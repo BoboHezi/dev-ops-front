@@ -19,8 +19,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
+            <a-form-item label="新项目" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['newCompileProject']" placeholder="请输入新项目"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
             <a-form-item label="项目" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['compileProjectId', validatorRules.compileProjectId]" :trigger-change="true" dictCode="devops_project,project_name,project_name" placeholder="请选择项目" />
+              <j-dict-select-tag type="list" v-decorator="['compileProjectId']" :trigger-change="true" dictCode="devops_project,project_name,project_name" placeholder="请选择项目" />
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -120,6 +125,11 @@
               { required: true, message: '请输入平台!'},
             ]
           },
+          newCompileProject: {
+            rules: [
+              { required: true, message: '请输入新项目!'},
+            ]
+          },
           compileProjectId: {
             rules: [
               { required: true, message: '请选择项目!'},
@@ -191,7 +201,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compilePlatformId','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compilePlatformId','newCompileProject','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
         })
       },
       //渲染流程表单数据
@@ -237,7 +247,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compilePlatformId','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compilePlatformId','newCompileProject','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
       },
     }
   }
