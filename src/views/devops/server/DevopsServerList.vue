@@ -105,6 +105,7 @@
           <a-tag v-if="serverStatus==0" color="green">未使用</a-tag>
           <a-tag v-if="serverStatus==1" color="orange">已占用</a-tag>
           <a-tag v-if="serverStatus==2" color="blue">已关机</a-tag>
+          <a-tag v-if="serverStatus==3" color="blue">暂时保护</a-tag>
         </template>
 
       </a-table>

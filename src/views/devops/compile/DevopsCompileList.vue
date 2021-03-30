@@ -112,7 +112,7 @@
         </span>
 
         <span slot='action' slot-scope='text, record'>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==-1'>重新编译</a>
+          <a v-if='record.compileStatus==-1'>正在排队</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==1'>开始编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==2'>重新编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==3'>重新编译</a>
@@ -142,13 +142,13 @@
         </span>
         <!-- 状态渲染模板 -->
         <template slot='customRenderStatus' slot-scope='compileStatus'>
-          <a-tag v-if='compileStatus==-1' color='red'>编译失败</a-tag>
+          <a-tag v-if='compileStatus==-1' color='blue'>等待中</a-tag>
           <a-tag v-if='compileStatus==0' color='orange'>编译成功</a-tag>
           <a-tag v-if='compileStatus==1' color='green'>初始化</a-tag>
-          <a-tag v-if='compileStatus==2' color='blue'>参数错误</a-tag>
-          <a-tag v-if='compileStatus==3' color='blue'>新项目名错误</a-tag>
+          <a-tag v-if='compileStatus==2' color='reb'>参数错误</a-tag>
+          <a-tag v-if='compileStatus==3' color='reb'>新项目名错误</a-tag>
           <a-tag v-if='compileStatus==4' color='blue'>编译中</a-tag>
-          <a-tag v-if='compileStatus==5' color='blue'>编译失败</a-tag>
+          <a-tag v-if='compileStatus==5' color='reb'>编译失败</a-tag>
           <a-tag v-if='compileStatus==6' color='blue'>编译停止</a-tag>
         </template>
       </a-table>
@@ -198,11 +198,6 @@ export default {
           title: '平台',
           align: 'center',
           dataIndex: 'compilePlatformId'
-        },
-        {
-          title: '版本号',
-          align: 'center',
-          dataIndex: 'compileProjectIdNumber'
         },
         {
           title: '编译服务器ip',
