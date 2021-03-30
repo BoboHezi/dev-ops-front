@@ -222,6 +222,9 @@ export default {
   },
   created() {
     this.getSuperFieldList()
+    this.timer = setInterval(() => {
+      this.loadData();
+    },1000*5)
   },
   computed: {
     importExcelUrl: function() {

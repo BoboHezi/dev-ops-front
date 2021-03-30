@@ -166,6 +166,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import DevopsCompileModal from './modules/DevopsCompileModal'
 import { filterMultiDictText } from '@comp/dict/JDictSelectUtil'
 import AreaChartTy from '@comp/chart/AreaChartTy'
+import { getAction } from '@api/manage'
 
 export default {
   name: 'DevopsCompileList',
@@ -304,6 +305,9 @@ export default {
     this.$set(this.dictOptions, 'compileIsSign', [{ text: '是', value: 'Y' }, { text: '否', value: 'N' }])
     this.$set(this.dictOptions, 'compileIsVerify', [{ text: '是', value: 'Y' }, { text: '否', value: 'N' }])
     this.getSuperFieldList()
+    this.timer = setInterval(() => {
+      this.loadData();
+    },1000*5)
   },
   computed: {
     importExcelUrl: function() {
@@ -376,16 +380,16 @@ export default {
           compileIsVerify: mRecord.compileIsVerify,
           compileStatus: mRecord.compileStatus,
           compileSendEmail: mRecord.compileSendEmail
-        })
-        .then(function(res) {
-          if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
-        .catch(function(response) {
+        }).then((res) => {
+          if(res.success){
+          this.$message.success(res.message)
+          this.loadData();
+          this.$emit('ok')
+        }else{
+          this.loadData();
+          this.$message.warning(res.message)
+        }
+      }).catch(function(response) {
             console.log(response)
           }
         )
