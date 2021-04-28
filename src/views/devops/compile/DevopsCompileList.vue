@@ -30,6 +30,7 @@
             <span style='float: left;overflow: hidden;' class='table-page-search-submitButtons'>
               <a-button type='primary' @click='searchQuery' icon='search'>查询</a-button>
               <a-button type='primary' @click='searchReset' icon='reload' style='margin-left: 8px'>重置</a-button>
+              <a-button @click='handleAdd' type='primary' icon='plus' style='margin-left: 8px'>新增</a-button>
               <a hidden @click='handleToggleSearch' style='margin-left: 8px'>
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
@@ -43,7 +44,6 @@
 
     <!-- 操作按钮区域 -->
     <div class='table-operator'>
-      <a-button @click='handleAdd' type='primary' icon='plus'>新增</a-button>
       <a-button hidden type='primary' icon='download' @click="handleExportXls('编译管理')">导出</a-button>
       <a-upload hidden name='file' :showUploadList='false' :multiple='false' :headers='tokenHeader'
                 :action='importExcelUrl' @change='handleImportExcel'>
@@ -114,11 +114,12 @@
         <span slot='action' slot-scope='text, record'>
           <a v-if='record.compileStatus==-1'>正在排队</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==1'>开始编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==2'>重新编译</a>
+          <a @click='handleStopCompile(record)' v-if='record.compileStatus==2'>停止编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==3'>重新编译</a>
-          <a @click='handleStopCompile(record)' v-if='record.compileStatus==4'>停止编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==5'>重新编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==6'>重新编译</a>
+          <a @click='handleCompile(record)' v-if='record.compileStatus==4'>重新编译</a>
+          <a @click='handleStopCompile(record)' v-if='record.compileStatus==5'>停止编译</a>
+          <a @click='handleCompile(record)' v-if='record.compileStatus==6'>重新编译</a>           <a @click='handleCompile(record)' v-if='record.compileStatus==7'>正在连接</a>
+          <a @click='handleCompile(record)' v-if='record.compileStatus==7'>重新编译</a>
           <a v-if='record.compileStatus==0'>编译完成</a>
           <a-divider type='vertical' />
 
@@ -145,11 +146,12 @@
           <a-tag v-if='compileStatus==-1' color='blue'>等待中</a-tag>
           <a-tag v-if='compileStatus==0' color='orange'>编译成功</a-tag>
           <a-tag v-if='compileStatus==1' color='green'>初始化</a-tag>
-          <a-tag v-if='compileStatus==2' color='reb'>参数错误</a-tag>
-          <a-tag v-if='compileStatus==3' color='reb'>新项目名错误</a-tag>
-          <a-tag v-if='compileStatus==4' color='blue'>编译中</a-tag>
-          <a-tag v-if='compileStatus==5' color='reb'>编译失败</a-tag>
-          <a-tag v-if='compileStatus==6' color='blue'>编译停止</a-tag>
+          <a-tag v-if='compileStatus==2' color='blue'>连接中</a-tag>
+          <a-tag v-if='compileStatus==3' color='red'>参数错误</a-tag>
+          <a-tag v-if='compileStatus==4' color='red'>新项目名错误</a-tag>
+          <a-tag v-if='compileStatus==5' color='blue'>编译中</a-tag>
+          <a-tag v-if='compileStatus==6' color='red'>编译失败</a-tag>
+          <a-tag v-if='compileStatus==7' color='red'>编译停止</a-tag>
         </template>
       </a-table>
     </div>
@@ -231,7 +233,7 @@ export default {
             if (text == 'ota') {
               return 'ota'
             }
-            if (text == 'new') {
+            if (text == 'n') {
               return 'new'
             }
           }
@@ -271,6 +273,26 @@ export default {
           dataIndex: 'compileBuildFinishTime',
         },
         {
+          title:'签名ftp账号',
+          align:"center",
+          dataIndex: 'compileSignFtpId_dictText'
+        },
+        {
+          title:'登录签名后台账号',
+          align:"center",
+          dataIndex: 'compileLoginAccount_dictText'
+        },
+        {
+          title:'验收ftp账号',
+          align:"center",
+          dataIndex: 'compileVerityFtpUserName'
+        },
+        {
+          title:'签名验收平台',
+          align:"center",
+          dataIndex: 'compileSvPlatformTerrace'
+        },
+        {
           title: '编译日志',
           dataIndex: 'checkLog',
           align: 'center',
@@ -307,7 +329,7 @@ export default {
     this.getSuperFieldList()
     this.timer = setInterval(() => {
       this.loadData();
-    },1000*5)
+    },1000*30)
   },
   computed: {
     importExcelUrl: function() {
@@ -334,6 +356,10 @@ export default {
       fieldList.push({ type: 'string', value: 'compileLogUrl', text: '编译日志', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileSendEmail', text: '邮箱通知抄送', dictCode: '' })
       fieldList.push({ type: 'date', value: 'compileBuildTime', text: '编译开始时间' })
+      fieldList.push({type:'string',value:'compileSignFtpId',text:'签名ftpID',dictCode:'devops_ftp,ftp_user_name,id'})
+      fieldList.push({type:'string',value:'compileLoginAccount',text:'登录签名账号',dictCode:'devops_ftp,ftp_user_name,id'})
+      fieldList.push({type:'string',value:'compileVerityFtpUserName',text:'验收服务器账号',dictCode:''})
+      fieldList.push({type:'string',value:'compileSvPlatformTerrace',text:'签名平台',dictCode:''})
       this.superFieldList = fieldList
     },
     handleCheckLog(mRecord) {
@@ -379,7 +405,11 @@ export default {
           compileIsSign: mRecord.compileIsSign,
           compileIsVerify: mRecord.compileIsVerify,
           compileStatus: mRecord.compileStatus,
-          compileSendEmail: mRecord.compileSendEmail
+          compileSendEmail: mRecord.compileSendEmail,
+          compileSignFtpId: mRecord.compileSignFtpId,
+          compileLoginAccount: mRecord.compileLoginAccount,
+          compileVerityFtpUserName: mRecord.compileVerityFtpUserName,
+          compileSvPlatformTerrace: mRecord.compileSvPlatformTerrace
         }).then((res) => {
           if(res.success){
           this.$message.success(res.message)

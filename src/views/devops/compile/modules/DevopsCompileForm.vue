@@ -14,7 +14,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-form-item label="编译平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-dict-select-tag type="list" v-decorator="['compilePlatformId', validatorRules.compilePlatformId]" :trigger-change="true" dictCode="devops_code,code_name,code_name" placeholder="请选择平台" />
             </a-form-item>
           </a-col>
@@ -39,8 +39,8 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="编译动作" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select default-value="new" v-decorator="['compileAction',{  initialValue:'ota' }]" >
-                <a-select-option value="new">new</a-select-option>
+              <a-select default-value="n" v-decorator="['compileAction',{  initialValue:'ota' }]" >
+                <a-select-option value="n">new</a-select-option>
                 <a-select-option value="ota">ota</a-select-option>
               </a-select>
             </a-form-item>
@@ -58,6 +58,26 @@
           <a-col :span="24">
             <a-form-item label="邮箱通知抄送" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="['compileSendEmail', validatorRules.compileSendEmail]" placeholder="请输入邮箱通知抄送"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="签名ftp账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['compileSignFtpId',validatorRules.compileSignFtpId]" :trigger-change="true" dictCode="devops_ftp,ftp_user_name,id" placeholder="请选择签名ftp账号"  ></j-dict-select-tag>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="登录签名后台账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['compileLoginAccount']" :trigger-change="true" dictCode="devops_sign,sign_account,id" placeholder="请输入登录签名后台账号"  ></j-dict-select-tag>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="验收ftp账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['compileVerityFtpUserName']" placeholder="请输入验收ftp账号"  ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="签名平台" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['compileSvPlatformTerrace']" :trigger-change="true" dictCode="devops_sign_platform,platform_sign_product,platform_sign_product" placeholder="请输入签名平台"  ></j-dict-select-tag>
             </a-form-item>
           </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
@@ -160,6 +180,11 @@
               { required: true, message: '请输入邮箱通知抄送!'},
             ]
           },
+          compileSignFtpId:{
+            rules: [
+              { required: true, message: '请选择签名服务账号'},
+            ]
+          },
           pid:{},
         },
         url: {
@@ -201,7 +226,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compilePlatformId','newCompileProject','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+          this.form.setFieldsValue(pick(this.model,'compileName','compileBuildId','compileDesc','compilePlatformId','newCompileProject','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime','compileSignFtpId','compileLoginAccount','compileVerityFtpUserName','compileSvPlatformTerrace'))
         })
       },
       //渲染流程表单数据
@@ -247,7 +272,7 @@
         })
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compilePlatformId','newCompileProject','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime'))
+        this.form.setFieldsValue(pick(row,'compileName','compileBuildId','compileDesc','compilePlatformId','newCompileProject','compileProjectId','compileServerIp','compileVariant','compileAction','compileIsSign','compileIsVerify','compileStatus','compileLogUrl','compileSendEmail','compileBuildTime','compileSignFtpId','compileLoginAccount','compileVerityFtpUserName','compileSvPlatformTerrace'))
       },
     }
   }
