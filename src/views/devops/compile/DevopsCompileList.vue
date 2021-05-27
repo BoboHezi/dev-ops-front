@@ -108,32 +108,38 @@
         </template>
 
         <span slot='checkLog' slot-scope='text, record'>
-          <a @click='handleCheckLog(record)'>查看</a>
+          <a @click='handleCheckLog(record)'
+             v-if='record.compileLogUrl!=null&&record.compileLogUrl.toString().length!=0'>查看</a>
+          <a v-if='record.compileLogUrl==null||record.compileLogUrl.toString().length==0'></a>
         </span>
 
         <span slot='action' slot-scope='text, record'>
-          <a v-if='record.compileStatus==-1'>正在排队</a>
+          <a @click='cancelCompile(record)' v-if='record.compileStatus==-1'>取消排队</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==1'>开始编译</a>
           <a @click='handleStopCompile(record)' v-if='record.compileStatus==2'>停止编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==3'>重新编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==4'>重新编译</a>
           <a @click='handleStopCompile(record)' v-if='record.compileStatus==5'>停止编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==6'>重新编译</a>           <a @click='handleCompile(record)' v-if='record.compileStatus==7'>正在连接</a>
+          <a @click='handleCompile(record)' v-if='record.compileStatus==6'>重新编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==7'>重新编译</a>
+          <a @click='handleCompile(record)' v-if='record.compileStatus==8'>重新编译</a>
           <a v-if='record.compileStatus==0'>编译完成</a>
-          <a-divider type='vertical' />
 
-          <a @click='handleEdit(record)'>编辑</a>
           <a-divider type='vertical' />
-          <a @click='handleDetail(record)'>详情</a>
-
-          <a-dropdown hidden>
+          <a-dropdown>
             <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
             <a-menu slot='overlay'>
+              <a-menu-item>
+                <a @click='handleEdit(record)'>编辑</a>
+              </a-menu-item>
               <a-menu-item>
                 <a @click='handleDetail(record)'>详情</a>
               </a-menu-item>
               <a-menu-item>
+                <a @click='handleCopy(record)'>复制添加</a>
+              </a-menu-item>
+
+              <a-menu-item hidden>
                 <a-popconfirm title='确定删除吗?' @confirm='() => handleDelete(record.id)'>
                   <a>删除</a>
                 </a-popconfirm>
@@ -143,15 +149,16 @@
         </span>
         <!-- 状态渲染模板 -->
         <template slot='customRenderStatus' slot-scope='compileStatus'>
-          <a-tag v-if='compileStatus==-1' color='blue'>等待中</a-tag>
-          <a-tag v-if='compileStatus==0' color='orange'>编译成功</a-tag>
-          <a-tag v-if='compileStatus==1' color='green'>初始化</a-tag>
+          <a-tag v-if='compileStatus==-1' color='blue'>排队中</a-tag>
+          <a-tag v-if='compileStatus==0' color='green'>编译成功</a-tag>
+          <a-tag v-if='compileStatus==1' color='orange'>初始化</a-tag>
           <a-tag v-if='compileStatus==2' color='blue'>连接中</a-tag>
           <a-tag v-if='compileStatus==3' color='red'>参数错误</a-tag>
           <a-tag v-if='compileStatus==4' color='red'>新项目名错误</a-tag>
           <a-tag v-if='compileStatus==5' color='blue'>编译中</a-tag>
           <a-tag v-if='compileStatus==6' color='red'>编译失败</a-tag>
           <a-tag v-if='compileStatus==7' color='red'>编译停止</a-tag>
+          <a-tag v-if='compileStatus==8' color='red'>没有代码</a-tag>
         </template>
       </a-table>
     </div>
@@ -192,11 +199,11 @@ export default {
           align: 'center',
           dataIndex: 'newCompileProject'
         },
-        {
-          title: '项目',
-          align: 'center',
-          dataIndex: 'compileProjectId'
-        },
+        // {
+        //   title: '项目',
+        //   align: 'center',
+        //   dataIndex: 'compileProjectId'
+        // },
         {
           title: '平台',
           align: 'center',
@@ -265,31 +272,31 @@ export default {
         {
           title: '编译开始时间',
           align: 'center',
-          dataIndex: 'compileBuildTime',
+          dataIndex: 'compileBuildTime'
         },
         {
           title: '编译结束时间',
           align: 'center',
-          dataIndex: 'compileBuildFinishTime',
+          dataIndex: 'compileBuildFinishTime'
         },
         {
-          title:'签名ftp账号',
-          align:"center",
+          title: '签名ftp账号',
+          align: 'center',
           dataIndex: 'compileSignFtpId_dictText'
         },
+        // {
+        //   title: '登录签名后台账号',
+        //   align: 'center',
+        //   dataIndex: 'compileLoginAccount_dictText'
+        // },
         {
-          title:'登录签名后台账号',
-          align:"center",
-          dataIndex: 'compileLoginAccount_dictText'
-        },
-        {
-          title:'验收ftp账号',
-          align:"center",
+          title: '验收ftp账号',
+          align: 'center',
           dataIndex: 'compileVerityFtpUserName'
         },
         {
-          title:'签名验收平台',
-          align:"center",
+          title: '签名验收平台',
+          align: 'center',
           dataIndex: 'compileSvPlatformTerrace'
         },
         {
@@ -317,7 +324,8 @@ export default {
         importExcelUrl: 'compile/devopsCompile/importExcel',
         autoCompile: '/compile/devopsCompile/autoCompile',
         stopCompile: '/compile/devopsCompile/stopCompile',
-        checkLog: '/compile/devopsCompile/checkLog'
+        handleCopy: '/compile/devopsCompile/handleCopy',
+        cancelCompile: '/compile/devopsCompile/cancelCompile'
       },
       dictOptions: {},
       superFieldList: []
@@ -328,8 +336,8 @@ export default {
     this.$set(this.dictOptions, 'compileIsVerify', [{ text: '是', value: 'Y' }, { text: '否', value: 'N' }])
     this.getSuperFieldList()
     this.timer = setInterval(() => {
-      this.loadData();
-    },1000*30)
+      this.loadData()
+    }, 1000 * 30)
   },
   computed: {
     importExcelUrl: function() {
@@ -356,73 +364,148 @@ export default {
       fieldList.push({ type: 'string', value: 'compileLogUrl', text: '编译日志', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileSendEmail', text: '邮箱通知抄送', dictCode: '' })
       fieldList.push({ type: 'date', value: 'compileBuildTime', text: '编译开始时间' })
-      fieldList.push({type:'string',value:'compileSignFtpId',text:'签名ftpID',dictCode:'devops_ftp,ftp_user_name,id'})
-      fieldList.push({type:'string',value:'compileLoginAccount',text:'登录签名账号',dictCode:'devops_ftp,ftp_user_name,id'})
-      fieldList.push({type:'string',value:'compileVerityFtpUserName',text:'验收服务器账号',dictCode:''})
-      fieldList.push({type:'string',value:'compileSvPlatformTerrace',text:'签名平台',dictCode:''})
+      fieldList.push({
+        type: 'string',
+        value: 'compileSignFtpId',
+        text: '签名ftpID',
+        dictCode: 'devops_ftp,ftp_user_name,id'
+      })
+      fieldList.push({
+        type: 'string',
+        value: 'compileLoginAccount',
+        text: '登录签名账号',
+        dictCode: 'devops_ftp,ftp_user_name,id'
+      })
+      fieldList.push({ type: 'string', value: 'compileVerityFtpUserName', text: '验收服务器账号', dictCode: '' })
+      fieldList.push({ type: 'string', value: 'compileSvPlatformTerrace', text: '签名平台', dictCode: '' })
       this.superFieldList = fieldList
     },
     handleCheckLog(mRecord) {
-      window.location.href = mRecord.compileLogUrl;
+      window.open(mRecord.compileLogUrl)
+    },
+    handleCopy(mRecord) {
+      const that = this
+      this.$confirm({
+        title: '复制项目',
+        content: '项目名称：' + (mRecord.compileProjectId == null ?
+          mRecord.newCompileProject : mRecord.compileProjectId),
+        onOk() {
+          that.$http.post(
+            that.url.handleCopy, {
+              id: mRecord.id
+            })
+          that.loadData()
+        },
+        onCancel() {
+        }
+      })
     },
     handleStopCompile(mRecord) {
-      alert('停止编译')
-      this.$http.post(
-        this.url.stopCompile, {
-          id: mRecord.id,
-          compileJenkinsJobName: mRecord.compileJenkinsJobName,
-          compileJenkinsJobId: mRecord.compileJenkinsJobId
-        })
-        .then(function(res) {
-          if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
-        .catch(function(response) {
-            console.log(response)
-          }
-        )
+      const that = this
+      this.$confirm({
+        title: '停止编译',
+        content: '是否停止编译？',
+        onOk() {
+          that.$http.post(
+            that.url.stopCompile, {
+              id: mRecord.id,
+              compileJenkinsJobName: mRecord.compileJenkinsJobName,
+              compileJenkinsJobId: mRecord.compileJenkinsJobId
+            })
+            .then(function(res) {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+              } else {
+                that.$emit('ok')
+                that.$message.warning(res.message)
+              }
+            })
+            .catch(function(response) {
+              that.$emit('发送失败')
+                console.log(response)
+              }
+            )
+        },
+        onCancel() {
+        }
+      })
+    },
+    cancelCompile(mRecord) {
+      const that = this
+      this.$confirm({
+        title: '取消排队',
+        content: '是否取消排队,重置项目？',
+        onOk() {
+          that.$http.post(
+            that.url.cancelCompile, {
+              id: mRecord.id
+            })
+            .then(function(res) {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+              } else {
+                that.$emit('ok')
+                that.$message.warning(res.message)
+              }
+            })
+            .catch(function(response) {
+              that.$emit('发送失败')
+                console.log(response)
+              }
+            )
+          that.loadData()
+        },
+        onCancel() {
+        }
+      })
     },
     handleCompile(mRecord) {
-      alert('项目名称：' + (mRecord.compileProjectId == null ? mRecord.newCompileProject : mRecord.compileProjectId) +
-        '\n签名：' + mRecord.compileIsSign +
-        '\n编译类型：' + mRecord.compileVariant +
-        '\n编译作用：' + mRecord.compileAction)
-      this.$http.post(
-        this.url.autoCompile, {
-          id: mRecord.id,
-          compileBuildId: mRecord.compileBuildId,
-          compileName: mRecord.compileName,
-          compilePlatformId: mRecord.compilePlatformId,
-          newCompileProject: mRecord.newCompileProject,
-          compileProjectId: mRecord.compileProjectId,
-          compileServerIp: mRecord.compileServerIp,
-          compileVariant: mRecord.compileVariant,
-          compileAction: mRecord.compileAction,
-          compileIsSign: mRecord.compileIsSign,
-          compileIsVerify: mRecord.compileIsVerify,
-          compileStatus: mRecord.compileStatus,
-          compileSendEmail: mRecord.compileSendEmail,
-          compileSignFtpId: mRecord.compileSignFtpId,
-          compileLoginAccount: mRecord.compileLoginAccount,
-          compileVerityFtpUserName: mRecord.compileVerityFtpUserName,
-          compileSvPlatformTerrace: mRecord.compileSvPlatformTerrace
-        }).then((res) => {
-          if(res.success){
-          this.$message.success(res.message)
-          this.loadData();
-          this.$emit('ok')
-        }else{
-          this.loadData();
-          this.$message.warning(res.message)
+      const that = this
+      this.$confirm({
+        title: '编译项目',
+        content: '项目名称：' + (mRecord.compileProjectId == null ? mRecord.newCompileProject
+          : mRecord.compileProjectId),
+        onOk() {
+          that.$http.post(
+            that.url.autoCompile, {
+              id: mRecord.id,
+              createBy: mRecord.createBy,
+              compileBuildId: mRecord.compileBuildId,
+              compileName: mRecord.compileName,
+              compilePlatformId: mRecord.compilePlatformId,
+              newCompileProject: mRecord.newCompileProject,
+              compileProjectId: mRecord.compileProjectId,
+              compileServerIp: mRecord.compileServerIp,
+              compileVariant: mRecord.compileVariant,
+              compileAction: mRecord.compileAction,
+              compileIsSign: mRecord.compileIsSign,
+              compileIsVerify: mRecord.compileIsVerify,
+              compileStatus: mRecord.compileStatus,
+              compileSendEmail: mRecord.compileSendEmail,
+              compileSignFtpId: mRecord.compileSignFtpId,
+              compileLoginAccount: mRecord.compileLoginAccount,
+              compileVerityFtpUserName: mRecord.compileVerityFtpUserName,
+              compileSvPlatformTerrace: mRecord.compileSvPlatformTerrace,
+              cherryPick: mRecord.cherryPick
+            }).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message)
+              that.loadData()
+              that.$emit('ok')
+            } else {
+              that.loadData()
+              that.$message.warning(res.message)
+            }
+          }).catch(function(response) {
+              console.log(response)
+            }
+          )
+        },
+        onCancel() {
         }
-      }).catch(function(response) {
-            console.log(response)
-          }
-        )
+      })
     }
   }
 }

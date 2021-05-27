@@ -5,7 +5,7 @@
         <a-row>
           <a-col :span="24">
             <a-form-item label="代码平台名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="['codeName']" placeholder="请输入平台名称"  ></a-input>
+              <a-input v-decorator="['codeName',validatorRules.codeName]" placeholder="请输入平台名称"  ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -19,8 +19,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item label="服务器IP对应id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-dict-select-tag type="list" v-decorator="['codeServerId', validatorRules.codeServerId]" :trigger-change="true" dictCode="devops_server,server_ip,id" placeholder="请选择服务器IP对应id" />
+            <a-form-item label="服务器IP" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag type="list" v-decorator="['codeServerId', validatorRules.codeServerId]" :trigger-change="true" dictCode="devops_server,server_ip,id" placeholder="请选择服务器IP" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="存放路径" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="['codeDir']" placeholder="请填写代码存放路径" />
             </a-form-item>
           </a-col>
           <a-col v-if="showFlowSubmitButton" :span="24" style="text-align: center">
@@ -76,6 +81,11 @@
         },
         confirmLoading: false,
         validatorRules: {
+          codeName: {
+            rules: [
+              { required: true, message: '请输入平台名称!'},
+            ]
+          },
           codeRepoUrl: {
             rules: [
               { required: true, message: '请输入repo路径!'},
@@ -83,7 +93,7 @@
           },
           codeServerId: {
             rules: [
-              { required: true, message: '请输入服务器IP对应id!'},
+              { required: true, message: '请选择服务器IP!'},
             ]
           },
         },

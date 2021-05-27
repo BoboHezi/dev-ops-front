@@ -105,7 +105,10 @@
           <a @click='handleDetail(record)'>详情</a>
 
           <a-divider type='vertical' />
-          <a @click='handleSync(record)'>同步代码</a>
+          <a @click='handleSync(record)' v-if='record.codeStatus==-1'>重新同步</a>
+          <a @click='handleSync(record)' v-if='record.codeStatus==0'>同步代码</a>
+          <a v-if='record.codeStatus==1'>正在同步</a>
+          <a v-if='record.codeStatus==2'>同步完成</a>
 
           <a-dropdown hidden>
             <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
@@ -177,7 +180,7 @@ export default {
           dataIndex: 'codeRepoUrl'
         },
         {
-          title: '服务器IP对应id',
+          title: '服务器IP',
           align: 'center',
           dataIndex: 'codeServerId_dictText'
         },

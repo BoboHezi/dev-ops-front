@@ -81,7 +81,7 @@
           </a-button>
         </template>
 
-        <span slot="action" slot-scope="text, record">
+        <span slot="action" slot-scope="text, record" >
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
@@ -106,6 +106,7 @@
           <a-tag v-if="serverStatus==1" color="orange">已占用</a-tag>
           <a-tag v-if="serverStatus==2" color="blue">已关机</a-tag>
           <a-tag v-if="serverStatus==3" color="blue">暂时保护</a-tag>
+          <a-tag v-if="serverStatus==4" color="red">报废</a-tag>
         </template>
 
       </a-table>
@@ -154,11 +155,6 @@
             dataIndex: 'serverHost'
           },
           {
-            title:'密码',
-            align:"center",
-            dataIndex: 'serverPassword'
-          },
-          {
             title:'状态信息',
             align:"center",
             dataIndex: 'serverStatus',
@@ -180,14 +176,14 @@
             align:"center",
             dataIndex: 'serverAvailableStorage'
           },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            fixed:"right",
-            width:147,
-            scopedSlots: { customRender: 'action' }
-          }
+          // {
+          //   title: '操作',
+          //   dataIndex: 'action',
+          //   align:"center",
+          //   fixed:"right",
+          //   width:147,
+          //   scopedSlots: { customRender: 'action' }
+          // }
         ],
         url: {
           list: "/server/devopsServer/list",
