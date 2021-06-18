@@ -123,7 +123,7 @@
   import { mapActions } from "vuex"
   import { timeFix } from "@/utils/util"
   import Vue from 'vue'
-  import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
+  import { ACCESS_TOKEN ,USER_NAME,ENCRYPTED_STRING} from "@/store/mutation-types"
   import { putAction,postAction,getAction } from '@/api/manage'
   import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
@@ -172,6 +172,7 @@
     created () {
       this.currdatetime = new Date().getTime();
       Vue.ls.remove(ACCESS_TOKEN)
+      Vue.ls.remove(USER_NAME)
       this.getRouterData();
       this.handleChangeCheckCode();
       // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题

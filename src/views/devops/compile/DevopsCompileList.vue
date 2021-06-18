@@ -122,15 +122,18 @@
           <a @click='handleStopCompile(record)' v-if='record.compileStatus==5'>停止编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==6'>重新编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==7'>重新编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==8'>重新编译</a>
+          <a @click='handleCompile(record)'
+             v-if='record.compileStatus==8||record.compileStatus==9||record.compileStatus==13'>重新编译</a>
           <a v-if='record.compileStatus==0'>编译完成</a>
-
+          <a v-if='record.compileStatus==12'>clean sync...</a>
+          <a v-if='record.compileStatus==10'>编译成功</a>
+          <a v-if='record.compileStatus==11'>编译成功</a>
           <a-divider type='vertical' />
           <a-dropdown>
             <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
             <a-menu slot='overlay'>
               <a-menu-item>
-                <a @click='handleEdit(record)'>编辑</a>
+                <a @click='handleEditCompile(record)'>编辑</a>
               </a-menu-item>
               <a-menu-item>
                 <a @click='handleDetail(record)'>详情</a>
@@ -159,6 +162,11 @@
           <a-tag v-if='compileStatus==6' color='red'>编译失败</a-tag>
           <a-tag v-if='compileStatus==7' color='red'>编译停止</a-tag>
           <a-tag v-if='compileStatus==8' color='red'>没有代码</a-tag>
+          <a-tag v-if='compileStatus==9' color='red'>cherry_pick失败</a-tag>
+          <a-tag v-if='compileStatus==10' color='red'>上传失败</a-tag>
+          <a-tag v-if='compileStatus==11' color='red'>提交签名失败</a-tag>
+          <a-tag v-if='compileStatus==12' color='blue'>预处理中</a-tag>
+          <a-tag v-if='compileStatus==13' color='red'>环境错误</a-tag>
         </template>
       </a-table>
     </div>
@@ -175,7 +183,8 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import DevopsCompileModal from './modules/DevopsCompileModal'
 import { filterMultiDictText } from '@comp/dict/JDictSelectUtil'
 import AreaChartTy from '@comp/chart/AreaChartTy'
-import { getAction } from '@api/manage'
+import { getAction, postAction } from '@api/manage'
+import Vue from 'vue'
 
 export default {
   name: 'DevopsCompileList',
@@ -239,9 +248,10 @@ export default {
           customRender: function(text) {
             if (text == 'ota') {
               return 'ota'
-            }
-            if (text == 'n') {
+            } else if (text == 'n') {
               return 'new'
+            } else {
+              return 'ota_factory'
             }
           }
         },
@@ -383,6 +393,15 @@ export default {
     handleCheckLog(mRecord) {
       window.open(mRecord.compileLogUrl)
     },
+    handleEditCompile(mRecord) {
+      if (this.tokenName == 'admin' || this.tokenName == mRecord.createBy) {
+        this.$refs.modalForm.edit(mRecord)
+        this.$refs.modalForm.title = '编辑'
+        this.$refs.modalForm.disableSubmit = false
+      } else {
+        alert('你没有该权限！')
+      }
+    },
     handleCopy(mRecord) {
       const that = this
       this.$confirm({
@@ -390,11 +409,19 @@ export default {
         content: '项目名称：' + (mRecord.compileProjectId == null ?
           mRecord.newCompileProject : mRecord.compileProjectId),
         onOk() {
-          that.$http.post(
-            that.url.handleCopy, {
-              id: mRecord.id
+          if (that.tokenName == 'admin' || that.tokenName == mRecord.createBy) {
+            let params = { id: mRecord.id }
+            getAction(that.url.handleCopy, params).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.loadData()
+              } else {
+                that.$message.warning(res.message)
+              }
             })
-          that.loadData()
+          } else {
+            alert('你没有该权限！')
+          }
         },
         onCancel() {
         }
@@ -406,26 +433,22 @@ export default {
         title: '停止编译',
         content: '是否停止编译？',
         onOk() {
-          that.$http.post(
-            that.url.stopCompile, {
-              id: mRecord.id,
-              compileJenkinsJobName: mRecord.compileJenkinsJobName,
+          if (that.tokenName == 'admin' || that.tokenName == mRecord.createBy) {
+            let params = {
+              id: mRecord.id, compileJenkinsJobName: mRecord.compileJenkinsJobName,
               compileJenkinsJobId: mRecord.compileJenkinsJobId
-            })
-            .then(function(res) {
+            }
+            postAction(that.url.stopCompile, params).then((res) => {
               if (res.success) {
                 that.$message.success(res.message)
-                that.$emit('ok')
+                that.loadData()
               } else {
-                that.$emit('ok')
                 that.$message.warning(res.message)
               }
             })
-            .catch(function(response) {
-              that.$emit('发送失败')
-                console.log(response)
-              }
-            )
+          } else {
+            alert('你没有该权限！')
+          }
         },
         onCancel() {
         }
@@ -433,33 +456,27 @@ export default {
     },
     cancelCompile(mRecord) {
       const that = this
-      this.$confirm({
-        title: '取消排队',
-        content: '是否取消排队,重置项目？',
-        onOk() {
-          that.$http.post(
-            that.url.cancelCompile, {
-              id: mRecord.id
-            })
-            .then(function(res) {
+      if (that.tokenName == 'admin' || that.tokenName == mRecord.createBy) {
+        this.$confirm({
+          title: '取消排队',
+          content: '是否取消排队,重置项目？',
+          onOk() {
+            let params = { id: mRecord.id }
+            getAction(that.url.cancelCompile, params).then((res) => {
               if (res.success) {
                 that.$message.success(res.message)
-                that.$emit('ok')
+                that.loadData()
               } else {
-                that.$emit('ok')
                 that.$message.warning(res.message)
               }
             })
-            .catch(function(response) {
-              that.$emit('发送失败')
-                console.log(response)
-              }
-            )
-          that.loadData()
-        },
-        onCancel() {
-        }
-      })
+          },
+          onCancel() {
+          }
+        })
+      } else {
+        alert('你没有该权限！')
+      }
     },
     handleCompile(mRecord) {
       const that = this
@@ -468,40 +485,15 @@ export default {
         content: '项目名称：' + (mRecord.compileProjectId == null ? mRecord.newCompileProject
           : mRecord.compileProjectId),
         onOk() {
-          that.$http.post(
-            that.url.autoCompile, {
-              id: mRecord.id,
-              createBy: mRecord.createBy,
-              compileBuildId: mRecord.compileBuildId,
-              compileName: mRecord.compileName,
-              compilePlatformId: mRecord.compilePlatformId,
-              newCompileProject: mRecord.newCompileProject,
-              compileProjectId: mRecord.compileProjectId,
-              compileServerIp: mRecord.compileServerIp,
-              compileVariant: mRecord.compileVariant,
-              compileAction: mRecord.compileAction,
-              compileIsSign: mRecord.compileIsSign,
-              compileIsVerify: mRecord.compileIsVerify,
-              compileStatus: mRecord.compileStatus,
-              compileSendEmail: mRecord.compileSendEmail,
-              compileSignFtpId: mRecord.compileSignFtpId,
-              compileLoginAccount: mRecord.compileLoginAccount,
-              compileVerityFtpUserName: mRecord.compileVerityFtpUserName,
-              compileSvPlatformTerrace: mRecord.compileSvPlatformTerrace,
-              cherryPick: mRecord.cherryPick
-            }).then((res) => {
+          let params = { id: mRecord.id }
+          getAction(that.url.autoCompile, params).then((res) => {
             if (res.success) {
               that.$message.success(res.message)
               that.loadData()
-              that.$emit('ok')
             } else {
-              that.loadData()
               that.$message.warning(res.message)
             }
-          }).catch(function(response) {
-              console.log(response)
-            }
-          )
+          })
         },
         onCancel() {
         }

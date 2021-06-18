@@ -6,7 +6,7 @@
 import { filterObj } from '@/utils/util';
 import { deleteAction, getAction,downFile,getFileAccessHttpUrl } from '@/api/manage'
 import Vue from 'vue'
-import { ACCESS_TOKEN, TENANT_ID } from "@/store/mutation-types"
+import { ACCESS_TOKEN,USER_NAME, TENANT_ID } from "@/store/mutation-types"
 import store from '@/store'
 import {Modal} from 'ant-design-vue'
 
@@ -20,7 +20,7 @@ export const JeecgListMixin = {
       /* 分页参数 */
       ipagination:{
         current: 1,
-        pageSize: 10,
+        pageSize: 20,
         pageSizeOptions: ['10', '20', '30'],
         showTotal: (total, range) => {
           return range[0] + "-" + range[1] + " 共" + total + "条"
@@ -69,6 +69,10 @@ export const JeecgListMixin = {
         head['tenant_id'] = tenantid
       }
       return head;
+    },
+    tokenName(){
+      let name = Vue.ls.get(USER_NAME)
+      return name;
     }
   },
   methods:{

@@ -45,6 +45,7 @@
               <a-select v-decorator="['compileAction',{  initialValue:'ota' }]">
                 <a-select-option value='n'>new</a-select-option>
                 <a-select-option value='ota'>ota</a-select-option>
+                <a-select-option value='ota_factory'>ota_factory</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -93,7 +94,9 @@
           <!--          </a-col>-->
           <a-col :span='24'>
             <a-form-item label='验收ftp账号' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-              <a-input v-decorator="['compileVerityFtpUserName']" placeholder='请输入验收ftp账号'></a-input>
+              <j-dict-select-tag v-decorator="['compileVerityFtpUserName']"
+                                 :trigger-change='true' dictCode='devops_upload,upload_name,upload_name'
+                                 placeholder='请输入验收ftp账号' />
             </a-form-item>
           </a-col>
           <a-col :span='24'>
@@ -275,7 +278,7 @@ export default {
       this.model = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.model, 'compileName', 'compileBuildId', 'compileDesc', 'compilePlatformId', 'newCompileProject', 'compileProjectId', 'compileServerIp', 'compileVariant', 'compileAction', 'compileIsSign', 'compileIsVerify', 'compileStatus', 'compileLogUrl', 'compileSendEmail', 'compileBuildTime', 'compileSignFtpId', 'compileLoginAccount', 'compileVerityFtpUserName', 'compileSvPlatformTerrace', 'cherryPick'))
+        this.form.setFieldsValue(pick(this.model, 'compileName', 'compileBuildId', 'compileDesc', 'compilePlatformId', 'newCompileProject', 'compileProjectId', 'compileServerIp', 'compileVariant', 'compileAction', 'compileIsSign', 'compileIsVerify', 'compileStatus', 'compileLogUrl', 'compileSendEmail', 'compileBuildTime', 'compileSignFtpId', 'compileLoginAccount', 'compileVerityFtpUserName', 'compileSvPlatformTerrace', 'cherryPick','compileQueueLevel'))
         this.letters = this.model.cherryPick.split(';')
         if (this.letters.length > 1) {
           this.letters.pop()
