@@ -116,7 +116,7 @@
         <span slot='action' slot-scope='text, record'>
           <a @click='cancelCompile(record)' v-if='record.compileStatus==-1'>取消排队</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==1'>开始编译</a>
-          <a @click='handleStopCompile(record)' v-if='record.compileStatus==2'>停止编译</a>
+          <a v-if='record.compileStatus==2'>连接服务器中</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==3'>重新编译</a>
           <a @click='handleCompile(record)' v-if='record.compileStatus==4'>重新编译</a>
           <a @click='handleStopCompile(record)' v-if='record.compileStatus==5'>停止编译</a>

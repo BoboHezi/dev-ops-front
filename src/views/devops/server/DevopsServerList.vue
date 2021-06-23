@@ -93,10 +93,9 @@
 
         <span slot='action' slot-scope='text, record'>
           <a @click='handleRestart(record)'>重启服务器</a>
-          <!--          <a @click="handleEdit(record)">编辑</a>-->
-
-          <!--          <a-divider type="vertical" />-->
-          <!--          <a @click="handleDetail(record)">详情</a>-->
+          <a-divider v-if='record.serverStatus==2 || record.serverStatus==0' type='vertical' />
+          <a @click='handleSelect(record)' v-if='record.serverStatus==0'>占用</a>
+          <a @click='handleSelect(record)' v-if='record.serverStatus==2'>启用</a>
           <a-dropdown hidden>
             <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
             <a-menu slot='overlay'>
@@ -212,7 +211,8 @@ export default {
         exportXlsUrl: '/server/devopsServer/exportXls',
         importExcelUrl: 'server/devopsServer/importExcel',
         handleRestart: '/server/devopsServer/handleRestart',
-        handleAllRestart: '/server/devopsServer/handleAllRestart'
+        handleAllRestart: '/server/devopsServer/handleAllRestart',
+        handleSelect: '/server/devopsServer/handleSelect'
       },
       dictOptions: {},
       superFieldList: []
@@ -227,6 +227,24 @@ export default {
     }
   },
   methods: {
+    handleSelect(mRecord) {
+      const that = this
+      if (that.tokenName == 'admin') {
+        that.$confirm({
+          title: mRecord.serverStatus == 0 ? '占用服务器吗？' : '启用服务器吗？',
+          content: mRecord.serverStatus == 0 ? '占用服务器的状态为关机状态' : '启用服务器后,将自动进入编译系统',
+          onOk() {
+            let params = { id: mRecord.id, status: mRecord.serverStatus }
+            getAction(that.url.handleSelect, params)
+            that.loadData()
+          },
+          onCancel() {
+          }
+        })
+      } else {
+        alert('你没有该权限,请联系管理员！')
+      }
+    },
     handleRestart(mRecord) {
       const that = this
       if (that.tokenName == 'admin') {
@@ -234,7 +252,7 @@ export default {
           title: '重启服务器',
           content: '是否重启服务,大概需要5分钟？',
           onOk() {
-            if (mRecord.serverStatus == '0') {
+            if (mRecord.serverStatus == 0) {
               let params = { id: mRecord.id }
               getAction(that.url.handleRestart, params)
               that.loadData()
