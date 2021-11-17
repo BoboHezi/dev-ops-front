@@ -15,22 +15,9 @@
             </a-form-item>
           </a-col>
           <a-col :span='24'>
-            <a-form-item label='验收ftp登录账号' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-              <j-dict-select-tag v-decorator="['otaOriginalUploadName', validatorRules.otaUploadName]"
-                                 :trigger-change='true' dictCode='devops_upload,upload_name,upload_name'
-                                 placeholder='请选择验收ftp登录账号(上个版本)' />
-            </a-form-item>
-          </a-col>
-          <a-col :span='24'>
-            <a-form-item label='验收ftp登录账号' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-              <j-dict-select-tag v-decorator="['otaUploadName', validatorRules.otaUploadName]"
-                                 :trigger-change='true' dictCode='devops_upload,upload_name,upload_name'
-                                 placeholder='请选择验收ftp登录账号(目标)' />
-            </a-form-item>
-          </a-col>
-          <a-col :span='24'>
             <a-form-item label='ota平台' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-              <j-dict-select-tag type='list' v-decorator="['otaPlatform', validatorRules.otaPlatform]" :trigger-change='true'
+              <j-dict-select-tag type='list' v-decorator="['otaPlatform', validatorRules.otaPlatform]"
+                                 :trigger-change='true'
                                  dictCode='devops_sign_platform,platform_sign_product,platform_sign_product'
                                  placeholder='请选择签名平台'></j-dict-select-tag>
             </a-form-item>
@@ -95,17 +82,20 @@ export default {
       validatorRules: {
         otaOriginalDir: {
           rules: [
-            { required: true, message: '请输入上个项目地址!' }
+            { required: true, message: '请输入上个项目地址!' },
+            {
+              pattern: '^ftp://([^@]*)@([^/|^:]*)(:[\\d]+)?/(.*/)?(.*\\.zip)',
+              message: '请输入带有账号的且正确的ftp'
+            }
           ]
         },
         otaNewDir: {
           rules: [
-            { required: true, message: '请输入目标项目地址!' }
-          ]
-        },
-        otaUploadName: {
-          rules: [
-            { required: true, message: '请输入ota登录账号!' }
+            { required: true, message: '请输入目标项目地址!' },
+            {
+              pattern: '^ftp://([^@]*)@([^/|^:]*)(:[\\d]+)?/(.*/)?(.*\\.zip)',
+              message: '请输入带有账号的且正确的ftp'
+            }
           ]
         },
         otaPlatform: {
@@ -158,7 +148,7 @@ export default {
       this.model = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.model, 'otaOriginalDir', 'otaNewDir', 'otaUploadName', 'otaPlatform', 'otaStatus', 'otaEmail','otaOriginalUploadName'))
+        this.form.setFieldsValue(pick(this.model, 'otaOriginalDir', 'otaNewDir', 'otaPlatform', 'otaStatus', 'otaEmail'))
       })
     },
     //渲染流程表单数据
@@ -204,7 +194,7 @@ export default {
       })
     },
     popupCallback(row) {
-      this.form.setFieldsValue(pick(row, 'otaOriginalDir', 'otaNewDir', 'otaUploadName', 'otaPlatform', 'otaStatus', 'otaEmail', 'otaOriginalUploadName'))
+      this.form.setFieldsValue(pick(row, 'otaOriginalDir', 'otaNewDir', 'otaPlatform', 'otaStatus', 'otaEmail'))
     }
   }
 }

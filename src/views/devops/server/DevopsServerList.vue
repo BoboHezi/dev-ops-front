@@ -91,6 +91,16 @@
           </a-button>
         </template>
 
+        <span slot='request' slot-scope='text, record'>
+          <a @click='allowRequestServer(record)' v-if='record.serverLinkStatus==2'>允许</a>
+          <a-divider v-if='record.serverLinkStatus==2' type='vertical' />
+          <a @click='refuseRequestServer(record)' v-if='record.serverLinkStatus==2'>拒绝</a>
+          <a @click='allowRequestServer(record)' v-if='record.serverLinkStatus==1'>请求</a>
+          <a @click='breakRequestServer(record)' v-if='record.serverLinkStatus==0'>断开</a>
+          <a v-if='record.serverLinkStatus==3'>连接中...</a>
+          <a v-if='record.serverLinkStatus==4'>断开中...</a>
+        </span>
+
         <span slot='action' slot-scope='text, record'>
           <a @click='handleRestart(record)'>重启服务器</a>
           <a-divider v-if='record.serverStatus==2 || record.serverStatus==0' type='vertical' />
@@ -113,14 +123,14 @@
         <!-- 状态渲染模板 -->
         <template slot='customRenderStatus' slot-scope='serverStatus'>
           <a-tag v-if='serverStatus==0' color='green'>未使用</a-tag>
-          <a-tag v-if='serverStatus==1' color='orange'>已占用</a-tag>
-          <a-tag v-if='serverStatus==2' color='blue'>已关机</a-tag>
-          <a-tag v-if='serverStatus==3' color='blue'>暂时保护</a-tag>
-          <a-tag v-if='serverStatus==4' color='red'>报废</a-tag>
-          <a-tag v-if='serverStatus==5' color='orange'>重启中</a-tag>
-          <a-tag v-if='serverStatus==6' color='red'>未知</a-tag>
+          <a-tag v-else-if='serverStatus==1' color='orange'>已占用</a-tag>
+          <a-tag v-else-if='serverStatus==2' color='blue'>已关机</a-tag>
+          <a-tag v-else-if='serverStatus==3' color='blue'>暂时保护</a-tag>
+          <a-tag v-else-if='serverStatus==4' color='red'>报废</a-tag>
+          <a-tag v-else-if='serverStatus==5' color='orange'>重启中</a-tag>
+          <a-tag v-else-if='serverStatus==7' color='blue'>调试代码</a-tag>
+          <a-tag v-else color='red'>未知</a-tag>
         </template>
-
       </a-table>
     </div>
 
@@ -169,6 +179,12 @@ export default {
           dataIndex: 'serverHost'
         },
         {
+          title: '密码',
+          align: 'center',
+          dataIndex: 'serverPassword',
+          key: 'serverPasswordKey'
+        },
+        {
           title: '状态信息',
           align: 'center',
           dataIndex: 'serverStatus',
@@ -186,14 +202,29 @@ export default {
           dataIndex: 'updateTime'
         },
         {
-          title: 'CPU使用率',
+          title: '请求调试地址',
           align: 'center',
-          dataIndex: 'serverCpuUsageRate'
+          dataIndex: 'serverCompileUrl',
+          key:'serverUrl',
         },
+        // {
+        //   title: 'CPU使用率',
+        //   align: 'center',
+        //   dataIndex: 'serverCpuUsageRate'
+        // },
+        // {
+        //   title: '存储剩余空间',
+        //   align: 'center',
+        //   dataIndex: 'serverAvailableStorage'
+        // },
         {
-          title: '存储剩余空间',
+          title: '连接服务器',
+          dataIndex: 'request',
           align: 'center',
-          dataIndex: 'serverAvailableStorage'
+          fixed: 'right',
+          width: 147,
+          scopedSlots: { customRender: 'request' },
+          key: 'requestServer'
         },
         {
           title: '操作',
@@ -212,7 +243,10 @@ export default {
         importExcelUrl: 'server/devopsServer/importExcel',
         handleRestart: '/server/devopsServer/handleRestart',
         handleAllRestart: '/server/devopsServer/handleAllRestart',
-        handleSelect: '/server/devopsServer/handleSelect'
+        handleSelect: '/server/devopsServer/handleSelect',
+        allowRequestServer: '/server/devopsServer/allowRequestServer',
+        breakRequestServer: '/server/devopsServer/breakRequestServer',
+        refuseRequestServer: '/server/devopsServer/refuseRequestServer'
       },
       dictOptions: {},
       superFieldList: []
@@ -220,6 +254,11 @@ export default {
   },
   created() {
     this.getSuperFieldList()
+    if(!this.checkPermission()){
+      this.columns = this.columns.filter(col => col.key != 'serverUrl')
+      this.columns = this.columns.filter(col => col.key != 'requestServer')
+      this.columns = this.columns.filter(col => col.key != 'serverPasswordKey')
+    }
   },
   computed: {
     importExcelUrl: function() {
@@ -229,7 +268,7 @@ export default {
   methods: {
     handleSelect(mRecord) {
       const that = this
-      if (that.tokenName == 'admin') {
+      if (this.checkPermission()) {
         that.$confirm({
           title: mRecord.serverStatus == 0 ? '占用服务器吗？' : '启用服务器吗？',
           content: mRecord.serverStatus == 0 ? '占用服务器的状态为关机状态' : '启用服务器后,将自动进入编译系统',
@@ -245,9 +284,71 @@ export default {
         alert('你没有该权限,请联系管理员！')
       }
     },
+    refuseRequestServer(mRecord) {
+      const that = this
+      if (this.checkPermission()) {
+        that.$confirm({
+          title: '拒绝请求服务器',
+          content: '拒绝请求服务器？',
+          onOk() {
+            let params = { id: mRecord.id }
+            getAction(that.url.refuseRequestServer, params)
+            that.loadData()
+          },
+          onCancel() {
+          }
+        })
+      } else {
+        alert('你没有该权限,请联系管理员！')
+      }
+    },
+    allowRequestServer(mRecord) {
+      const that = this
+      if (this.checkPermission()) {
+        that.$confirm({
+          title: '允许请求服务器',
+          content: '允许请求服务器,大概需要2分钟？',
+          onOk() {
+            if (mRecord.serverStatus == 0) {
+              let params = { id: mRecord.id }
+              getAction(that.url.allowRequestServer, params)
+              that.loadData()
+            } else {
+              alert('正在使用的服务器不支持请求')
+            }
+          },
+          onCancel() {
+          }
+        })
+      } else {
+        alert('你没有该权限,请联系管理员！')
+      }
+    },
+    breakRequestServer(mRecord) {
+      const that = this
+      if (this.checkPermission()) {
+        that.$confirm({
+          title: '断开连接服务器',
+          content: '断开连接服务器,大概需要2分钟？',
+          onOk() {
+            if (mRecord.serverStatus == 7) {
+              let params = { id: mRecord.id }
+              getAction(that.url.breakRequestServer, params)
+              that.loadData()
+            } else {
+              alert('正在使用的服务器不支持断连')
+            }
+          },
+          onCancel() {
+          }
+        })
+      } else {
+        alert('你没有该权限,请联系管理员！')
+      }
+    },
     handleRestart(mRecord) {
       const that = this
-      if (that.tokenName == 'admin') {
+      if (this.checkPermission()) {
         that.$confirm({
           title: '重启服务器',
           content: '是否重启服务,大概需要5分钟？',
@@ -269,7 +370,7 @@ export default {
     },
     handleAllRestart() {
       const that = this
-      if (that.tokenName == 'admin') {
+      if (this.checkPermission()) {
         that.$confirm({
           title: '重启服务器',
           content: '是否重启服务,大概需要10分钟？',
@@ -285,6 +386,9 @@ export default {
       }
     },
     initDictConfig() {
+    },
+    checkPermission() {
+      return this.tokenName == 'admin' || this.tokenName == 'imp01' || this.tokenName == 'imp02'
     },
     getSuperFieldList() {
       let fieldList = []

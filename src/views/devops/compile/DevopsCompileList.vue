@@ -17,12 +17,12 @@
             </a-form-item>
           </a-col>
           <a-col :xl='6' :lg='7' :md='8' :sm='24'>
-            <a-form-item label='项目名称'>
-              <j-input placeholder='输入项目名称模糊查询' v-model='queryParam.compileProjectId'></j-input>
+            <a-form-item label='邮件抄送'>
+              <j-input placeholder='输入邮件抄送模糊查询' v-model='queryParam.compileSendEmail'></j-input>
             </a-form-item>
           </a-col>
           <a-col :xl='6' :lg='7' :md='8' :sm='24'>
-            <a-form-item label='新项目名称'>
+            <a-form-item label='项目名称'>
               <j-input placeholder='输入项目名称模糊查询' v-model='queryParam.newCompileProject'></j-input>
             </a-form-item>
           </a-col>
@@ -115,19 +115,21 @@
 
         <span slot='action' slot-scope='text, record'>
           <a @click='cancelCompile(record)' v-if='record.compileStatus==-1'>取消排队</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==1'>开始编译</a>
-          <a v-if='record.compileStatus==2'>连接服务器中</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==3'>重新编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==4'>重新编译</a>
-          <a @click='handleStopCompile(record)' v-if='record.compileStatus==5'>停止编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==6'>重新编译</a>
-          <a @click='handleCompile(record)' v-if='record.compileStatus==7'>重新编译</a>
+          <a @click='handleCompile(record)' v-else-if='record.compileStatus==1'>开始编译</a>
+          <a v-else-if='record.compileStatus==2'>连接服务器中</a>
+          <a @click='handleCompile(record)' v-else-if='record.compileStatus==3'>重新编译</a>
+          <a @click='handleCompile(record)' v-else-if='record.compileStatus==4'>重新编译</a>
+          <a @click='handleStopCompile(record)' v-else-if='record.compileStatus==5'>停止编译</a>
+          <a @click='handleCompile(record)' v-else-if='record.compileStatus==6'>重新编译</a>
+          <a @click='handleCompile(record)' v-else-if='record.compileStatus==7'>重新编译</a>
           <a @click='handleCompile(record)'
-             v-if='record.compileStatus==8||record.compileStatus==9||record.compileStatus==13'>重新编译</a>
-          <a v-if='record.compileStatus==0'>编译完成</a>
-          <a v-if='record.compileStatus==12'>clean sync...</a>
-          <a v-if='record.compileStatus==10'>编译成功</a>
-          <a v-if='record.compileStatus==11'>编译成功</a>
+             v-else-if='record.compileStatus==8||record.compileStatus==9||record.compileStatus==13'>重新编译</a>
+          <a v-else-if='record.compileStatus==0'>编译完成</a>
+          <a v-else-if='record.compileStatus==12'>clean sync...</a>
+          <a v-else-if='record.compileStatus==10'>编译成功</a>
+          <a v-else-if='record.compileStatus==11'>编译成功</a>
+          <a v-else-if='record.compileStatus==14'>停止编译中</a>
+          <a v-else>未知</a>
           <a-divider type='vertical' />
           <a-dropdown>
             <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
@@ -136,10 +138,14 @@
                 <a @click='handleEditCompile(record)'>编辑</a>
               </a-menu-item>
               <a-menu-item>
-                <a @click='handleDetail(record)'>详情</a>
+                <router-link :to="{query:{id:record.id},
+                path:'/devops/compile/DevopsCompileDetail'}">详情</router-link>
               </a-menu-item>
               <a-menu-item>
                 <a @click='handleCopy(record)'>复制添加</a>
+              </a-menu-item>
+               <a-menu-item>
+                <a @click='requestServer(record)'>调试代码</a>
               </a-menu-item>
 
               <a-menu-item hidden>
@@ -153,20 +159,22 @@
         <!-- 状态渲染模板 -->
         <template slot='customRenderStatus' slot-scope='compileStatus'>
           <a-tag v-if='compileStatus==-1' color='blue'>排队中</a-tag>
-          <a-tag v-if='compileStatus==0' color='green'>编译成功</a-tag>
-          <a-tag v-if='compileStatus==1' color='orange'>初始化</a-tag>
-          <a-tag v-if='compileStatus==2' color='blue'>连接中</a-tag>
-          <a-tag v-if='compileStatus==3' color='red'>参数错误</a-tag>
-          <a-tag v-if='compileStatus==4' color='red'>新项目名错误</a-tag>
-          <a-tag v-if='compileStatus==5' color='blue'>编译中</a-tag>
-          <a-tag v-if='compileStatus==6' color='red'>编译失败</a-tag>
-          <a-tag v-if='compileStatus==7' color='red'>编译停止</a-tag>
-          <a-tag v-if='compileStatus==8' color='red'>没有代码</a-tag>
-          <a-tag v-if='compileStatus==9' color='red'>cherry_pick失败</a-tag>
-          <a-tag v-if='compileStatus==10' color='red'>上传失败</a-tag>
-          <a-tag v-if='compileStatus==11' color='red'>提交签名失败</a-tag>
-          <a-tag v-if='compileStatus==12' color='blue'>预处理中</a-tag>
-          <a-tag v-if='compileStatus==13' color='red'>环境错误</a-tag>
+          <a-tag v-else-if='compileStatus==0' color='green'>编译成功</a-tag>
+          <a-tag v-else-if='compileStatus==1' color='orange'>初始化</a-tag>
+          <a-tag v-else-if='compileStatus==2' color='blue'>连接中</a-tag>
+          <a-tag v-else-if='compileStatus==3' color='red'>参数错误</a-tag>
+          <a-tag v-else-if='compileStatus==4' color='red'>新项目名错误</a-tag>
+          <a-tag v-else-if='compileStatus==5' color='blue'>编译中</a-tag>
+          <a-tag v-else-if='compileStatus==6' color='red'>编译失败</a-tag>
+          <a-tag v-else-if='compileStatus==7' color='red'>编译停止</a-tag>
+          <a-tag v-else-if='compileStatus==8' color='red'>没有代码</a-tag>
+          <a-tag v-else-if='compileStatus==9' color='red'>cherry_pick失败</a-tag>
+          <a-tag v-else-if='compileStatus==10' color='red'>上传失败</a-tag>
+          <a-tag v-else-if='compileStatus==11' color='red'>提交签名失败</a-tag>
+          <a-tag v-else-if='compileStatus==12' color='blue'>预处理中</a-tag>
+          <a-tag v-else-if='compileStatus==13' color='red'>环境错误</a-tag>
+          <a-tag v-else-if='compileStatus==14' color='red'>停止编译中</a-tag>
+          <a-tag v-else color='red'>未知</a-tag>
         </template>
       </a-table>
     </div>
@@ -204,7 +212,7 @@ export default {
           align: 'center'
         },
         {
-          title: '新项目',
+          title: '项目名称',
           align: 'center',
           dataIndex: 'newCompileProject'
         },
@@ -256,6 +264,12 @@ export default {
           }
         },
         {
+          title: '保存VM',
+          align: 'center',
+          dataIndex: 'compileSaveVmlinux',
+          customRender: (text) => (text ? filterMultiDictText(this.dictOptions['compileSaveVmlinux'], text) : '')
+        },
+        {
           title: '是否签名',
           align: 'center',
           dataIndex: 'compileIsSign',
@@ -288,6 +302,11 @@ export default {
           title: '编译结束时间',
           align: 'center',
           dataIndex: 'compileBuildFinishTime'
+        },
+        {
+          title: '版本号',
+          align: 'center',
+          dataIndex: 'compileProjectNum'
         },
         {
           title: '签名ftp账号',
@@ -335,13 +354,15 @@ export default {
         autoCompile: '/compile/devopsCompile/autoCompile',
         stopCompile: '/compile/devopsCompile/stopCompile',
         handleCopy: '/compile/devopsCompile/handleCopy',
-        cancelCompile: '/compile/devopsCompile/cancelCompile'
+        cancelCompile: '/compile/devopsCompile/cancelCompile',
+        requestServer: '/compile/devopsCompile/requestServer'
       },
       dictOptions: {},
       superFieldList: []
     }
   },
   created() {
+    this.$set(this.dictOptions, 'compileSaveVmlinux', [{ text: '是', value: 'Y' }, { text: '否', value: 'N' }])
     this.$set(this.dictOptions, 'compileIsSign', [{ text: '是', value: 'Y' }, { text: '否', value: 'N' }])
     this.$set(this.dictOptions, 'compileIsVerify', [{ text: '是', value: 'Y' }, { text: '否', value: 'N' }])
     this.getSuperFieldList()
@@ -350,6 +371,9 @@ export default {
     }, 1000 * 30)
   },
   computed: {
+    key(){
+        return this.$route.fullPath
+    },
     importExcelUrl: function() {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
     }
@@ -363,7 +387,7 @@ export default {
       fieldList.push({ type: 'int', value: 'compileBuildId', text: '任务ID', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileDesc', text: '描述', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compilePlatformId', text: '平台', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'newCompileProject', text: '新项目名', dictCode: '' })
+      fieldList.push({ type: 'string', value: 'newCompileProject', text: '项目名', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileProjectId', text: '项目，版本号', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileServerIp', text: '编译服务器ip', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileVariant', text: '版本类型', dictCode: '' })
@@ -374,6 +398,7 @@ export default {
       fieldList.push({ type: 'string', value: 'compileLogUrl', text: '编译日志', dictCode: '' })
       fieldList.push({ type: 'string', value: 'compileSendEmail', text: '邮箱通知抄送', dictCode: '' })
       fieldList.push({ type: 'date', value: 'compileBuildTime', text: '编译开始时间' })
+      fieldList.push({ type: 'string', value: 'compileProjectNum', text: '版本号' })
       fieldList.push({
         type: 'string',
         value: 'compileSignFtpId',
@@ -394,22 +419,53 @@ export default {
       window.open(mRecord.compileLogUrl)
     },
     handleEditCompile(mRecord) {
-      if (this.tokenName == 'admin' || this.tokenName == mRecord.createBy) {
-        this.$refs.modalForm.edit(mRecord)
-        this.$refs.modalForm.title = '编辑'
-        this.$refs.modalForm.disableSubmit = false
+      if (this.checkPermission(mRecord)) {
+        if (mRecord.compileStatus == 1 || mRecord.compileStatus == 3 || mRecord.compileStatus == 4 |
+          mRecord.compileStatus == 6 || mRecord.compileStatus == 7 ||
+          mRecord.compileStatus == 8 || mRecord.compileStatus == 9 || mRecord.compileStatus == 13) {
+          this.$refs.modalForm.edit(mRecord)
+          this.$refs.modalForm.title = '编辑'
+          this.$refs.modalForm.disableSubmit = false
+        } else {
+          alert('正在使用中，无法编辑！')
+        }
+      } else {
+        alert('你没有该权限！')
+      }
+    },
+    requestServer(mRecord) {
+      const that = this
+      if (that.checkPermission(mRecord)) {
+        this.$confirm({
+            title: '请求服务器？',
+            content: '请联系管理员,请求成功后会以邮件方式通知你',
+            onOk() {
+              let params = { id: mRecord.id }
+              getAction(that.url.requestServer, params).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message)
+                  that.loadData()
+                } else {
+                  that.$message.warning(res.message)
+                }
+              })
+            },
+            onCancel() {
+            }
+          }
+        )
       } else {
         alert('你没有该权限！')
       }
     },
     handleCopy(mRecord) {
       const that = this
-      this.$confirm({
-        title: '复制项目',
-        content: '项目名称：' + (mRecord.compileProjectId == null ?
-          mRecord.newCompileProject : mRecord.compileProjectId),
-        onOk() {
-          if (that.tokenName == 'admin' || that.tokenName == mRecord.createBy) {
+      if (that.checkPermission(mRecord)) {
+        this.$confirm({
+          title: '复制项目',
+          content: '项目名称：' + (mRecord.compileProjectId == null ?
+            mRecord.newCompileProject : mRecord.compileProjectId),
+          onOk() {
             let params = { id: mRecord.id }
             getAction(that.url.handleCopy, params).then((res) => {
               if (res.success) {
@@ -419,21 +475,20 @@ export default {
                 that.$message.warning(res.message)
               }
             })
-          } else {
-            alert('你没有该权限！')
+          }, onCancel() {
           }
-        },
-        onCancel() {
-        }
-      })
+        })
+      } else {
+        alert('你没有该权限！')
+      }
     },
     handleStopCompile(mRecord) {
       const that = this
-      this.$confirm({
-        title: '停止编译',
-        content: '是否停止编译？',
-        onOk() {
-          if (that.tokenName == 'admin' || that.tokenName == mRecord.createBy) {
+      if (that.checkPermission(mRecord)) {
+        this.$confirm({
+          title: '停止编译',
+          content: '是否停止编译？',
+          onOk() {
             let params = {
               id: mRecord.id, compileJenkinsJobName: mRecord.compileJenkinsJobName,
               compileJenkinsJobId: mRecord.compileJenkinsJobId
@@ -446,17 +501,17 @@ export default {
                 that.$message.warning(res.message)
               }
             })
-          } else {
-            alert('你没有该权限！')
+          },
+          onCancel() {
           }
-        },
-        onCancel() {
-        }
-      })
+        })
+      } else {
+        alert('你没有该权限！')
+      }
     },
     cancelCompile(mRecord) {
       const that = this
-      if (that.tokenName == 'admin' || that.tokenName == mRecord.createBy) {
+      if (this.checkPermission(mRecord)) {
         this.$confirm({
           title: '取消排队',
           content: '是否取消排队,重置项目？',
@@ -477,7 +532,12 @@ export default {
       } else {
         alert('你没有该权限！')
       }
-    },
+    }
+    ,
+    checkPermission(mRecord) {
+      return this.tokenName == 'admin' || this.tokenName == 'imp01' || this.tokenName == 'imp02' || this.tokenName == mRecord.createBy
+    }
+    ,
     handleCompile(mRecord) {
       const that = this
       this.$confirm({

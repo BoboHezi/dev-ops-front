@@ -21,9 +21,9 @@
             </a-form-item>
           </a-col>
           <a-col :span='24'>
-            <a-form-item label='新项目' :labelCol='labelCol' :wrapperCol='wrapperCol'>
+            <a-form-item label='项目名' :labelCol='labelCol' :wrapperCol='wrapperCol'>
               <a-input v-decorator="['newCompileProject',validatorRules.newCompileProject]"
-                       placeholder='请输入新项目'></a-input>
+                       placeholder='请输入项目名称'></a-input>
             </a-form-item>
           </a-col>
           <!--          <a-col :span="24">-->
@@ -47,6 +47,11 @@
                 <a-select-option value='ota'>ota</a-select-option>
                 <a-select-option value='ota_factory'>ota_factory</a-select-option>
               </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span='24'>
+            <a-form-item label='保存VmLinux' :labelCol='labelCol' :wrapperCol='wrapperCol'>
+              <j-switch v-decorator="['compileSaveVmlinux',{  initialValue:'Y' }]"></j-switch>
             </a-form-item>
           </a-col>
           <a-col :span='24'>
@@ -84,6 +89,7 @@
                 <a-select-option value='0'>低</a-select-option>
                 <a-select-option value='50'>中</a-select-option>
                 <a-select-option value='100'>高</a-select-option>
+                <a-select-option value='150'>加急</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -187,7 +193,7 @@ export default {
         },
         newCompileProject: {
           rules: [
-            { required: true, message: '请输入新项目!' }
+            { required: true, message: '请输入项目名!' }
           ]
         },
         compileProjectId: {
@@ -278,7 +284,7 @@ export default {
       this.model = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.model, 'compileName', 'compileBuildId', 'compileDesc', 'compilePlatformId', 'newCompileProject', 'compileProjectId', 'compileServerIp', 'compileVariant', 'compileAction', 'compileIsSign', 'compileIsVerify', 'compileStatus', 'compileLogUrl', 'compileSendEmail', 'compileBuildTime', 'compileSignFtpId', 'compileLoginAccount', 'compileVerityFtpUserName', 'compileSvPlatformTerrace', 'cherryPick','compileQueueLevel'))
+        this.form.setFieldsValue(pick(this.model, 'compileName', 'compileBuildId', 'compileDesc', 'compilePlatformId', 'newCompileProject', 'compileProjectId', 'compileServerIp', 'compileVariant', 'compileAction', 'compileIsSign','compileSaveVmlinux', 'compileIsVerify', 'compileStatus', 'compileLogUrl', 'compileSendEmail', 'compileBuildTime', 'compileSignFtpId', 'compileLoginAccount', 'compileVerityFtpUserName', 'compileSvPlatformTerrace', 'cherryPick','compileQueueLevel'))
         this.letters = this.model.cherryPick.split(';')
         if (this.letters.length > 1) {
           this.letters.pop()
@@ -317,6 +323,8 @@ export default {
               if (this.letters[i] != '')
                 this.model.cherryPick += this.letters[i] + ';'
             }
+          }else {
+            this.model.cherryPick = ''
           }
           let formData = Object.assign(this.model, values)
           console.log('表单提交数据', formData)
@@ -335,7 +343,7 @@ export default {
       })
     },
     popupCallback(row) {
-      this.form.setFieldsValue(pick(row, 'compileName', 'compileBuildId', 'compileDesc', 'compilePlatformId', 'newCompileProject', 'compileProjectId', 'compileServerIp', 'compileVariant', 'compileAction', 'compileIsSign', 'compileIsVerify', 'compileStatus', 'compileLogUrl', 'compileSendEmail', 'compileBuildTime', 'compileSignFtpId', 'compileLoginAccount', 'compileVerityFtpUserName', 'compileSvPlatformTerrace', 'cherryPick', 'compileQueueLevel'))
+      this.form.setFieldsValue(pick(row, 'compileName', 'compileBuildId', 'compileDesc', 'compilePlatformId', 'newCompileProject', 'compileProjectId', 'compileServerIp', 'compileVariant', 'compileAction', 'compileIsSign', 'compileSaveVmlinux','compileIsVerify', 'compileStatus', 'compileLogUrl', 'compileSendEmail', 'compileBuildTime', 'compileSignFtpId', 'compileLoginAccount', 'compileVerityFtpUserName', 'compileSvPlatformTerrace', 'cherryPick', 'compileQueueLevel'))
     }
   }
 }
