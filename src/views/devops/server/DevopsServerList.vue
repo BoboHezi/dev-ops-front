@@ -103,9 +103,9 @@
 
         <span slot='action' slot-scope='text, record'>
           <a @click='handleRestart(record)'>重启服务器</a>
-          <a-divider v-if='record.serverStatus==2 || record.serverStatus==0' type='vertical' />
+          <a-divider type='vertical' />
           <a @click='handleSelect(record)' v-if='record.serverStatus==0'>占用</a>
-          <a @click='handleSelect(record)' v-if='record.serverStatus==2'>启用</a>
+          <a @click='handleSelect(record)' v-else=''>启用</a>
           <a-dropdown hidden>
             <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
             <a-menu slot='overlay'>
@@ -232,7 +232,8 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
+          scopedSlots: { customRender: 'action' },
+          key: 'keyAction'
         }
       ],
       url: {
@@ -258,6 +259,7 @@ export default {
       this.columns = this.columns.filter(col => col.key != 'serverUrl')
       this.columns = this.columns.filter(col => col.key != 'requestServer')
       this.columns = this.columns.filter(col => col.key != 'serverPasswordKey')
+      this.columns = this.columns.filter(col => col.key != 'keyAction')
     }
   },
   computed: {

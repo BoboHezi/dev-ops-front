@@ -100,29 +100,19 @@
 
         <span slot='action' slot-scope='text, record'>
           <a @click='handleEdit(record)'>编辑</a>
-
           <a-divider type='vertical' />
-          <a @click='handleDetail(record)'>详情</a>
-
+          <a>
+            <a @click='handleSync(record)' v-if='record.codeStatus==-1'>重新同步</a>
+            <a @click='handleSync(record)' v-if='record.codeStatus==0'>同步代码</a>
+            <a v-if='record.codeStatus==1'>正在同步</a>
+            <a v-if='record.codeStatus==2'>同步完成</a>
+          </a>
           <a-divider type='vertical' />
-          <a @click='handleSync(record)' v-if='record.codeStatus==-1'>重新同步</a>
-          <a @click='handleSync(record)' v-if='record.codeStatus==0'>同步代码</a>
-          <a v-if='record.codeStatus==1'>正在同步</a>
-          <a v-if='record.codeStatus==2'>同步完成</a>
-
-          <a-dropdown hidden>
-            <a class='ant-dropdown-link'>更多 <a-icon type='down' /></a>
-            <a-menu slot='overlay'>
-              <a-menu-item>
-                <a @click='handleDetail(record)'>详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title='确定删除吗?' @confirm='() => handleDelete(record.id)'>
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a>
+            <a-popconfirm title='确定删除吗?' @confirm='() => handleDelete(record.id)'>
+              <a>删除</a>
+            </a-popconfirm>
+          </a>
         </span>
 
         <!-- 状态渲染模板 -->
@@ -147,6 +137,7 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import DevopsCodeModal from './modules/DevopsCodeModal'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
+import { getAction } from '@api/manage'
 
 export default {
   name: 'DevopsCodeList',
@@ -207,8 +198,9 @@ export default {
           dataIndex: 'action',
           align: 'center',
           fixed: 'right',
-          width: 147,
-          scopedSlots: { customRender: 'action' }
+          width: 200,
+          scopedSlots: { customRender: 'action' },
+          key: 'actionKey'
         }
       ],
       url: {
@@ -225,9 +217,12 @@ export default {
   },
   created() {
     this.getSuperFieldList()
+    if (!this.checkPermission()) {
+      this.columns = this.columns.filter(col => col.key != 'actionKey')
+    }
     this.timer = setInterval(() => {
-      this.loadData();
-    },1000*30)
+      this.loadData()
+    }, 1000 * 30)
   },
   computed: {
     importExcelUrl: function() {
@@ -253,29 +248,21 @@ export default {
       this.superFieldList = fieldList
     },
     handleSync(record) {
-      alert(record.projectBuildAction)
-      this.$http.post(
-        this.url.syncCode, {
-          id: record.id,
-          codeName: record.codeName,
-          codeDesc: record.codeDesc,
-          codeRepoUrl: record.codeRepoUrl,
-          codeStatus: record.codeStatus,
-          codeServerId: record.codeServerId,
-          codeDir: record.codeDir
-        })
-        .then(function(res) {
-          if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
-          } else {
-            this.$message.warning(res.message)
+      const that = this
+      if (this.checkPermission()) {
+        that.$confirm({
+          title: '是否完成了同步操作',
+          content: '是请按确认，不是轻按取消',
+          onOk() {
+            let params = { id: record.id }
+            getAction(that.url.syncCode, params)
+            that.loadData()
           }
         })
-        .catch(function(response) {
-            console.log(response)
-          }
-        )
+      }
+    },
+    checkPermission() {
+      return this.tokenName == 'admin' || this.tokenName == 'imp01' || this.tokenName == 'imp02'
     }
   }
 }
