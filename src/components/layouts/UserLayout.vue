@@ -14,7 +14,7 @@
 
       <div class="footer">
         <div class="copyright">
-          Copyright &copy; 2021 FreemeImp Team
+          Copyright &copy; 2022 FreemeImp Team
         </div>
       </div>
     </div>
